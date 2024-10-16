@@ -8,7 +8,7 @@ import adminModel from "../model/admin.model.js"
 
 const store =  multer.diskStorage({
     destination: (req, file, cb)=>{
-      return  cb(null, "/public/admin")
+      return  cb(null, "/Users/Prem/OneDrive/Desktop/library_management_system/lms/backend/public/admin")
     },
 
     filename: (req, file, cb) => {
@@ -34,8 +34,28 @@ export const getAdmin =  async(req, res)=>{
 
 
 export const createAdmin =  async(req, res)=>{
-    const {} =  req.body;
+    const {user, email, password} =  req.body;
+    const profile =  req.file;
+
     try{
+
+        if(user && email && profile && password){
+            const adminUser = new adminModel({
+                user: user,
+                email: email,
+                password: password,
+                profile: profile.filename
+            });
+
+            const saveAdmin =  await adminUser.save();
+            if(!saveAdmin){
+                handleError(res, 400, "cannot save admin account");
+            }else{
+                handleError(res, 201, "admin account created successfully", saveAdmin)
+            }
+        }else{
+         return   handleError(res, 400, "all fields are required")
+        }
         
     }catch(e){
         handleError(res, 500, e.message)

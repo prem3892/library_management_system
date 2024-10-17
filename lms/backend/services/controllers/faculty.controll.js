@@ -16,7 +16,7 @@ const storage =  multer.diskStorage({
 export const facultyMulter =  multer({storage: storage})
 
 
-
+// ! get all the faculties 
 
 export const getFaculty =   async(req, res)=>{
     try{    
@@ -31,6 +31,8 @@ export const getFaculty =   async(req, res)=>{
     }
 }
 
+
+// ! create faculty
 
 export const createFaculty =  async(req, res)=>{
     const {facultyName, email, mobile, password} =  req.body;
@@ -49,13 +51,11 @@ export const createFaculty =  async(req, res)=>{
                     facultyProfile: facultyProfile.filename
                 });
                 if(faculty){
- 
                     await faculty.save();
                     return handleError(res, 201, "Faculty created successfully", faculty)
                 }else{
                     return handleError(res,400, "cannot save faculty")
                 }
-               
             }else{
                 return handleError(res, 400, "All fields are required");
             }
@@ -64,3 +64,43 @@ export const createFaculty =  async(req, res)=>{
         handleError(res, 400, e.message)
     }
 }
+
+
+// ! find  faculty by id 
+export const findFacultyById = async(req, res)=>{
+    const id =  req.params.id;
+
+    try{
+        const faculty = await FacultyModel.findById(id);
+        if(!faculty){
+            return handleError(res, 400, "Faculty not found");
+        }else{
+            return handleError(res, 200, "Faculty found", faculty)
+        }
+    }catch(e){
+        return handleError(res, 500, e.message)
+    }
+}
+
+
+// ! delete faculty and associated courses
+// export const deleteFaculty = async (req, res) => {
+//     const id = req.params.id;
+//     try {
+//         // Check if faculty exists
+//         const faculty = await facultyModel.findById(id);
+//         if (!faculty) {
+//             return handleError(res, 404, "Faculty not found");
+//         }
+
+//         // Delete associated courses
+//         await courseModel.deleteMany({ courseId: id });
+
+//         // Delete the faculty
+//         await facultyModel.findByIdAndDelete(id);
+        
+//         return handleError(res, 200, "Faculty and associated courses deleted successfully");
+//     } catch (e) {
+//         handleError(res, 500, e.message);
+//     }
+// }

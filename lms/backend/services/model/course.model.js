@@ -5,6 +5,7 @@ const courseSchema =  new mongoose.Schema({
     courseTitle: String,
     courseContent: String,
     coursePdf: String,
+    author: String,
     courseId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "faculty",

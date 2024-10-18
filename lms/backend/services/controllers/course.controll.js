@@ -89,3 +89,20 @@ export const createCourseByFaculty = async(req, res)=>{
         handleError(res, 500, e.message)
     }
 }
+
+
+
+// ! delete all courses
+
+export const deleteAllCourses = async(req, res)=>{
+    try{
+        const deleteAllCoursesQuery = await courseModel.deleteMany();
+        if(deleteAllCoursesQuery){
+            return handleError(res, 200, "All courses deleted successfully")
+        }else{
+            return handleError(res, 400, "Failed to delete all courses")
+        }
+    }catch(e){
+      return  handleError(res, 500, e.message)
+    }
+}

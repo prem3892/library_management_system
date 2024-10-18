@@ -1,6 +1,7 @@
 import handleError from "../errors/handle.error.js"
 import multer from 'multer';
 import FacultyModel from "../model/faculty.model.js";
+import courseModel from "../model/course.model.js";
 
 
 
@@ -82,8 +83,52 @@ export const findFacultyById = async(req, res)=>{
     }
 }
 
-
 // ! delete faculty and associated courses
+
+export const deleteFaculty =  async(req, res)=>{
+    const id =  req.params.id;
+
+    try{
+        const facultyId =  await FacultyModel.findById(id);
+        if(!facultyId){
+            return handleError(res, 404, "Faculty not found");
+        }else{
+            const facultyId =  await FacultyModel.findByIdAndDelete(id);
+            if(facultyId){
+                const deleteCoursesAssociated =  await courseModel.deleteMany({courseId: id});
+
+                if(deleteCoursesAssociated){
+                    return handleError(res, 200, "Faculty and associated courses deleted successfully");
+                }else{
+                    return handleError(res, 400, "cannot delete courses and faculty and associated courses");
+                }
+
+            }else{
+                return handleError(res, 400, "Faculty not deleted");
+            }
+
+        }
+
+    }catch (e){
+        handleError(res, 500, e.message);
+    }
+}
+
+
+// ! delete all faculty 
+export const deleteAllFaculty = async(req, res)=>{
+    try{
+        const deleteAllFaculties = await FacultyModel.deleteMany();
+        if(deleteAllFaculties){
+            return handleError(res, 200, "All faculties deleted successfully");
+        }else{
+            return handleError(res, 400, "cannot delete faculties");
+        }
+    }catch(e){
+        return handleError(res, 500, e.message);
+    }
+}
+
 // export const deleteFaculty = async (req, res) => {
 //     const id = req.params.id;
 //     try {

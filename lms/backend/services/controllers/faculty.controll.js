@@ -2,13 +2,15 @@ import handleError from "../errors/handle.error.js"
 import multer from 'multer';
 import FacultyModel from "../model/faculty.model.js";
 import courseModel from "../model/course.model.js";
+import adminModel from "../model/admin.model.js";
 
 
 
 const storage =  multer.diskStorage({
     destination: (req, file, cb)=>{
-        return cb(null, "/Users/Prem/OneDrive/Desktop/library_management_system/lms/backend/public/faculty")
+        return cb(null, "/Users/premr/Desktop/library_management_system/library_management_system/lms/backend/public/faculty")
     },
+    
     filename: (req, file, cb) => {
         return cb(null, file.originalname);
     }
@@ -17,28 +19,51 @@ const storage =  multer.diskStorage({
 export const facultyMulter =  multer({storage: storage})
 
 
-// ! get all the faculties 
+// ! get all the faculties  by admin
 
 export const getFaculty =   async(req, res)=>{
-    try{    
-        const getFaculty = await FacultyModel.find();
-        if(getFaculty){
-            return handleError(res, 200, "Faculty found", getFaculty)
-        }else{
-            return handleError(res, 400, "Faculty not found");
-        }
-    }catch(e){
-        handleError(res, 500, e.message);
+    const {adminid} =  req.params;
+    if(!adminid){
+        return handleError(res, 400, "Please provide admin ID");
     }
-}
+    
+    const validateAdminId =  await adminModel.findById(adminid);
+    if(!validateAdminId){
+        return handleError(res, 400, "Admin not found");
+    }else{
+            try{    
+                const getFaculty = await FacultyModel.find({adminID: validateAdminId});
+                if(getFaculty){
+                    return handleError(res, 200, "Faculty found", getFaculty)
+                }else{
+                    return handleError(res, 400, "Faculty not found");
+                }
+            }catch(e){
+                handleError(res, 500, e.message);
+            }
+        }
+   
+    }
 
 
 // ! create faculty
-
 export const createFaculty =  async(req, res)=>{
-    const {facultyName, email, mobile, password} =  req.body;
+    const {facultyName, email, mobile, password, adminID} =  req.body;
     const facultyProfile =  req.file;
+    const id =  req.params.id;
 
+    if(!id){
+        return handleError(res, 400, "Please provide admin ID");
+    }
+
+    const adminid =  await adminModel.findById(id);
+    if(!adminid){
+        return handleError(res, 400, "Admin not found");
+    }
+
+    if(adminid._id.toString() !== adminID){
+        return handleError(res, 401, "Admin id does not match");
+    }
     try{
         if(!facultyProfile){
             return handleError(res, 400, "Please provide faculty profile");
@@ -49,8 +74,11 @@ export const createFaculty =  async(req, res)=>{
                     email: email,
                     mobile: mobile,
                     password:  password,
-                    facultyProfile: facultyProfile.filename
+                    facultyProfile: facultyProfile.filename,
+                    adminID: id
+                
                 });
+
                 if(faculty){
                     await faculty.save();
                     return handleError(res, 201, "Faculty created successfully", faculty)
@@ -67,38 +95,61 @@ export const createFaculty =  async(req, res)=>{
 }
 
 
-// ! find  faculty by id 
-export const findFacultyById = async(req, res)=>{
-    const id =  req.params.id;
+// ! find  faculty by admin id and faculty id
+export const findFacultyById = async (req, res) => {
+    const adminId = req.params.adminId; 
+    const facultyId = req.params.facultyId;
 
-    try{
-        const faculty = await FacultyModel.findById(id);
-        if(!faculty){
-            return handleError(res, 400, "Faculty not found");
-        }else{
-            return handleError(res, 200, "Faculty found", faculty)
+    try {
+        // Check if admin exists
+        const admin = await adminModel.findById(adminId);
+        if (!admin) {
+            return handleError(res, 404, "Admin not found");
         }
-    }catch(e){
-        return handleError(res, 500, e.message)
+
+        const faculty = await FacultyModel.findOne({ _id: facultyId, adminID: adminId });
+        if (!faculty) {
+            return handleError(res, 404, "Faculty not found or does not belong to this admin");
+        }
+
+        return res.status(200).json({ message: "Faculty found", faculty });
+    } catch (error) {
+        handleError(res, 500, error.message);
     }
-}
+};
+
 
 // ! delete faculty and associated courses
 
-export const deleteFaculty =  async(req, res)=>{
-    const id =  req.params.id;
+export const deleteFacultyById =  async(req, res)=>{
+    const {adminid} =  req.params;
+    const {facultyid} =  req.params;
+
+    if(!adminid){
+        return handleError(res, 400, "Please provide admin ID");
+    }
+    
+    const validateAdminId =  await adminModel.findById(adminid);
+    if(!validateAdminId){
+        return handleError(res, 400, "Invalid admin ID provided");
+    }
+    if(!facultyid){
+        return handleError(res, 400, "Please provide faculty ID");
+    }
+    
+    const validateFacultyId =  await FacultyModel.findById(facultyid);
+    if(!validateFacultyId){
+        return handleError(res, 404, "Invalid faculty ID provided");
+    }
 
     try{
-        const facultyId =  await FacultyModel.findById(id);
-        if(!facultyId){
-            return handleError(res, 404, "Faculty not found");
-        }else{
-            const facultyId =  await FacultyModel.findByIdAndDelete(id);
+
+            const facultyId =  await FacultyModel.findByIdAndDelete(validateFacultyId);
             if(facultyId){
-                const deleteCoursesAssociated =  await courseModel.deleteMany({courseId: id});
+                const deleteCoursesAssociated =  await courseModel.deleteMany({courseId: validateFacultyId});
 
                 if(deleteCoursesAssociated){
-                    return handleError(res, 200, "Faculty and associated courses deleted successfully");
+                    return handleError(res, 200, "Faculty and associated courses deleted successfully", facultyId, deleteCoursesAssociated);
                 }else{
                     return handleError(res, 400, "cannot delete courses and faculty and associated courses");
                 }
@@ -106,14 +157,11 @@ export const deleteFaculty =  async(req, res)=>{
             }else{
                 return handleError(res, 400, "Faculty not deleted");
             }
-
-        }
-
     }catch (e){
         handleError(res, 500, e.message);
     }
-}
 
+}
 
 // ! delete all faculty 
 export const deleteAllFaculty = async(req, res)=>{
@@ -128,24 +176,3 @@ export const deleteAllFaculty = async(req, res)=>{
         return handleError(res, 500, e.message);
     }
 }
-
-// export const deleteFaculty = async (req, res) => {
-//     const id = req.params.id;
-//     try {
-//         // Check if faculty exists
-//         const faculty = await facultyModel.findById(id);
-//         if (!faculty) {
-//             return handleError(res, 404, "Faculty not found");
-//         }
-
-//         // Delete associated courses
-//         await courseModel.deleteMany({ courseId: id });
-
-//         // Delete the faculty
-//         await facultyModel.findByIdAndDelete(id);
-        
-//         return handleError(res, 200, "Faculty and associated courses deleted successfully");
-//     } catch (e) {
-//         handleError(res, 500, e.message);
-//     }
-// }

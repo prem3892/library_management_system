@@ -26,9 +26,10 @@ const facultySchema =  new mongoose.Schema({
     facultyProfile: {
         type: String,
     },
-    admin: {
+    adminID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Admin"
+        ref: "Admin",
+        required: true
     }
 }, {timestamps: true})
 

@@ -4,7 +4,7 @@ const connStr =  process.env.DB;
 
 if(!connStr){
     // throw new Error("missing conn string");
- throw new Error("missing") 
+ throw new Error("missing conn string") 
 
 }
 

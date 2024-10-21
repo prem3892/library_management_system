@@ -7,7 +7,7 @@ import FacultyModel from "../model/faculty.model.js";
 
 const storage =  multer.diskStorage({
     destination: (req, file, cb)=>{
-        return cb(null, "/Users/Prem/OneDrive/Desktop/library_management_system/lms/backend/public/courses")
+        return cb(null, "/Users/premr/Desktop/library_management_system/library_management_system/lms/backend/public/courses")
     },
     filename: (req, file, cb) => {
         return cb(null, file.originalname);

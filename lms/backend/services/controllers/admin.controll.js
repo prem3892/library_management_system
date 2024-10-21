@@ -1,6 +1,7 @@
 import multer from "multer";
 import handleError from "../errors/handle.error.js";
 import adminModel from "../model/admin.model.js";
+import FacultyModel from "../model/faculty.model.js";
 
 // ! multer here  for admin
 
@@ -8,7 +9,7 @@ const store = multer.diskStorage({
   destination: (req, file, cb) => {
     return cb(
       null,
-      "/Users/Prem/OneDrive/Desktop/library_management_system/lms/backend/public/admin"
+      "/Users/premr/Desktop/library_management_system/library_management_system/lms/backend/public/admin"
     );
   },
 
@@ -18,6 +19,9 @@ const store = multer.diskStorage({
 });
 
 export const adminprofile = multer({ storage: store });
+
+
+// ! get admins
 
 export const getAdmin = async (req, res) => {
   try {
@@ -31,6 +35,9 @@ export const getAdmin = async (req, res) => {
     handleError(res, 500, e.message);
   }
 };
+
+
+// ! create admin account
 
 export const createAdmin = async (req, res) => {
   const { user, email, password } = req.body;
@@ -58,3 +65,34 @@ export const createAdmin = async (req, res) => {
     handleError(res, 500, e.message);
   }
 };
+
+
+// ! delete admin and associated faculty members
+
+
+
+export const deleteAdminAndAssociatedFaculties =  async(req, res)=>{
+  const { id } = req.params;
+
+  if(!id){
+   return handleError(res, 404, "admin id not found");
+  }
+
+  const varifyAdminId =  await adminModel.findById(id);
+  if(!varifyAdminId){
+    return handleError(res, 400, "invalid admin Id provided");
+  }
+
+  try{
+    const deletAdminAndAssociatedFaculty =  await adminModel.findByIdAndDelete(varifyAdminId);
+    if(deletAdminAndAssociatedFaculty){
+      const deleteAllFaculties =  await FacultyModel.deleteMany({adminID:deletAdminAndAssociatedFaculty });
+
+      return handleError(res, 200, "admin deleted successfully and all faculty deleted successfully", deleteAllFaculties)
+    }else{
+      return handleError(res, 404, "admin and associated faculty members not found");
+    }
+  }catch (e) {
+    handleError(res, 500, e.message);
+  }
+}

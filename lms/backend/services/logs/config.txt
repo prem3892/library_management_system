@@ -740,3 +740,7 @@
 ::1 - - [26/Oct/2024:04:30:45 +0000] "GET /api/v1/mail HTTP/1.1" 404 150 "-" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36"
 ::1 - - [26/Oct/2024:04:31:18 +0000] "GET /mail HTTP/1.1" 404 143 "-" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36"
 ::1 - - [26/Oct/2024:04:32:21 +0000] "GET / HTTP/1.1" 404 139 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+::1 - - [29/Oct/2024:12:46:48 +0000] "GET /admin/ HTTP/1.1" 200 159 "-" "PostmanRuntime/7.39.1"
+::1 - - [29/Oct/2024:12:47:09 +0000] "DELETE /deleteadmin/6715204211154ef5ef0d6b41/ HTTP/1.1" 200 123 "-" "PostmanRuntime/7.39.1"
+::1 - - [29/Oct/2024:12:47:13 +0000] "GET /admin/ HTTP/1.1" 200 35 "-" "PostmanRuntime/7.39.1"
+::1 - - [29/Oct/2024:12:47:41 +0000] "POST /create-admin HTTP/1.1" 201 179 "-" "PostmanRuntime/7.39.1"

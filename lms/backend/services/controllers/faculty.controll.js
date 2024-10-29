@@ -3,6 +3,7 @@ import multer from 'multer';
 import FacultyModel from "../model/faculty.model.js";
 import courseModel from "../model/course.model.js";
 import adminModel from "../model/admin.model.js";
+import sendVerification from "../mail/mailVarification.js";
 
 
 
@@ -39,13 +40,37 @@ export const getFaculty =   async(req, res)=>{
                     return handleError(res, 400, "Faculty not found");
                 }
             }catch(e){
-                handleError(res, 500, e.message);
+               return  handleError(res, 500, e.message);
             }
         }
    
     }
 
 
+
+    export const verificationRoute =   async (req, res) => {
+        res.send("hello world")
+        // const { id } = req.query;
+    
+        // if (!id) {
+        //     return handleError(res, 400, "Invalid request");
+        // }
+    
+        // try {
+        //     const faculty = await FacultyModel.findById(id);
+        //     if (!faculty) {
+        //         return handleError(res, 404, "Faculty not found");
+        //     }
+    
+        //     // Here you might want to set a flag indicating that the email has been verified
+        //     faculty.isVerified = true; // Assuming you have an `isVerified` field
+        //     await faculty.save();
+    
+        //     res.status(200).send("Email verified successfully!");
+        // } catch (error) {
+        //     handleError(res, 500, error.message);
+        // }
+    };
 // ! create faculty
 export const createFaculty =  async(req, res)=>{
     const {facultyName, email, mobile, password, adminID} =  req.body;
@@ -53,20 +78,27 @@ export const createFaculty =  async(req, res)=>{
     const id =  req.params.id;
 
     if(!id){
-        return handleError(res, 400, "Please provide admin ID");
+      return   handleError(res, 400, "Please provide admin ID");
+       
     }
-
     const adminid =  await adminModel.findById(id);
     if(!adminid){
         return handleError(res, 400, "Admin not found");
     }
 
     if(adminid._id.toString() !== adminID){
-        return handleError(res, 401, "Admin id does not match");
+        return   handleError(res, 401, "Admin id does not match");
     }
+
+    const checkMail =  await FacultyModel.findOne({email: email});
+    if(checkMail){
+       return  handleError(res, 400, "Email already exists");
+        
+    }
+
     try{
         if(!facultyProfile){
-            return handleError(res, 400, "Please provide faculty profile");
+            return  handleError(res, 400, "Please provide faculty profile");
         }else {
             if(facultyName && email && mobile && password){
                 const faculty = new FacultyModel({
@@ -78,19 +110,20 @@ export const createFaculty =  async(req, res)=>{
                     adminID: id
                 
                 });
-
                 if(faculty){
-                    await faculty.save();
-                    return handleError(res, 201, "Faculty created successfully", faculty)
+                   const data =   await faculty.save();
+                   const msg =  `<h2>Hii ${facultyName} Please <a href='http://localhost:8585/api/v1/mail-verification?id=${data._id}'>Verify</a> Your Mail</h2>`;
+                   sendVerification(email, "Mail verification", msg);
+                return  handleError(res, 201, "Faculty created successfully", data)
                 }else{
-                    return handleError(res,400, "cannot save faculty")
+                    return  handleError(res, 400, "Faculty not created")
                 }
             }else{
-                return handleError(res, 400, "All fields are required");
+                return   handleError(res, 400, "All fields are required");
             }
         }
     }catch(e){
-        handleError(res, 400, e.message)
+        return  handleError(res, 400, e.message)
     }
 }
 
@@ -104,17 +137,16 @@ export const findFacultyById = async (req, res) => {
         // Check if admin exists
         const admin = await adminModel.findById(adminId);
         if (!admin) {
-            return handleError(res, 404, "Admin not found");
+            return  handleError(res, 404, "Admin not found");
         }
 
-        const faculty = await FacultyModel.findOne({ _id: facultyId, adminID: adminId });
+        const faculty = await FacultyModel.findOne({ _id: facultyId }).populate("adminID");
         if (!faculty) {
-            return handleError(res, 404, "Faculty not found or does not belong to this admin");
+            return  handleError(res, 404, "Faculty not found or does not belong to this admin");
         }
-
-        return res.status(200).json({ message: "Faculty found", faculty });
+         return  handleError(res, 200, "Faculty found", faculty);
     } catch (error) {
-        handleError(res, 500, error.message);
+        return  handleError(res, 500, error.message);
     }
 };
 
@@ -126,20 +158,20 @@ export const deleteFacultyById =  async(req, res)=>{
     const {facultyid} =  req.params;
 
     if(!adminid){
-        return handleError(res, 400, "Please provide admin ID");
+        return  handleError(res, 400, "Please provide admin ID");
     }
     
     const validateAdminId =  await adminModel.findById(adminid);
     if(!validateAdminId){
-        return handleError(res, 400, "Invalid admin ID provided");
+        return  handleError(res, 400, "Invalid admin ID provided");
     }
     if(!facultyid){
-        return handleError(res, 400, "Please provide faculty ID");
+        return  handleError(res, 400, "Please provide faculty ID");
     }
     
     const validateFacultyId =  await FacultyModel.findById(facultyid);
     if(!validateFacultyId){
-        return handleError(res, 404, "Invalid faculty ID provided");
+        return  handleError(res, 404, "Invalid faculty ID provided");
     }
 
     try{
@@ -149,30 +181,31 @@ export const deleteFacultyById =  async(req, res)=>{
                 const deleteCoursesAssociated =  await courseModel.deleteMany({courseId: validateFacultyId});
 
                 if(deleteCoursesAssociated){
-                    return handleError(res, 200, "Faculty and associated courses deleted successfully", facultyId, deleteCoursesAssociated);
+                    return  handleError(res, 200, "Faculty and associated courses deleted successfully", facultyId, deleteCoursesAssociated);
                 }else{
                     return handleError(res, 400, "cannot delete courses and faculty and associated courses");
                 }
 
             }else{
-                return handleError(res, 400, "Faculty not deleted");
+                return  handleError(res, 400, "Faculty not deleted");
             }
     }catch (e){
-        handleError(res, 500, e.message);
+        return  handleError(res, 500, e.message);
     }
 
 }
 
 // ! delete all faculty 
 export const deleteAllFaculty = async(req, res)=>{
-    try{
+    try{3
         const deleteAllFaculties = await FacultyModel.deleteMany();
         if(deleteAllFaculties){
             return handleError(res, 200, "All faculties deleted successfully");
         }else{
-            return handleError(res, 400, "cannot delete faculties");
+            return  handleError(res, 400, "cannot delete faculties");
         }
     }catch(e){
-        return handleError(res, 500, e.message);
+        return  handleError(res, 500, e.message);
     }
 }
+

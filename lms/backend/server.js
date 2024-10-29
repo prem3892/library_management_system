@@ -6,13 +6,14 @@ import  'dotenv/config'
 const port  =  process.env.PORT;
 import fs from 'fs';
 import db from './services/database/db.js';
-
+import cors from 'cors'
 
 const streame = fs.createWriteStream("./services/logs/config.txt", {flags: "a"});
 
+app.use(cors("*"));
 app.use(morgan('combined', {stream: streame}));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // db
 db()

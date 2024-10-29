@@ -1,9 +1,10 @@
-import React from 'react'
+import { NavLink } from "react-router-dom"
+
 
 function Header() {
   return (
     <div>
-      <div className="navbar header fixed left-0 right-0">
+      <div className="navbar header fixed left-0 right-0 top-0 z-10">
   <div className="navbar-start">
     <div className="dropdown ">
       <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -23,7 +24,7 @@ function Header() {
       <ul
         tabIndex={0}
         className="menu bg-black menu-sm dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow">
-        <li><a>Item 1</a></li>
+        <li><NavLink to='#'>Item 1</NavLink></li>
         <li>
           <a>Parent</a>
           <ul className="p-2">
@@ -34,11 +35,11 @@ function Header() {
         <li><a>Item 3</a></li>
       </ul>
     </div>
-    <a className="btn btn-ghost text-xl capitalize">dashboard</a>
+    <NavLink to='/dashboard' className="btn btn-outline btn-secondary sm:btn-md xs:btn-sm text-xl capitalize">dashboard</NavLink>
   </div>
   <div className="navbar-center hidden lg:flex ">
     <ul className="menu menu-horizontal px-1 ">
-      <li><a>Item 1</a></li>
+      <li><NavLink to='/' className=" capitalize">home</NavLink></li>
       <li>
         <details className=''>
           <summary>Parent</summary>
@@ -51,9 +52,9 @@ function Header() {
       <li><a>Item 3</a></li>
     </ul>
   </div>
-  <div className="navbar-end flex gap-4 xs:btn-xs">
-    <a className="btn btn-info">Button</a>
-    <a className="btn btn-info">Button</a>
+  <div className="navbar-end flex gap-4 ">
+    <NavLink to='/register' className="btn sm:btn-md xs:btn-sm btn-info">Sign Up</NavLink>
+    <NavLink to='/login' className="btn sm:btn-md xs:btn-sm btn-info">Sign In</NavLink>
   </div>
 </div>
     </div>

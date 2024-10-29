@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-const users = []; // In-memory user storage for this example
+const users = [];
 
 // Generate JWT
 const generateToken = (user) => {

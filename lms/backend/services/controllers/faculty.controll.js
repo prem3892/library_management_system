@@ -4,6 +4,8 @@ import FacultyModel from "../model/faculty.model.js";
 import courseModel from "../model/course.model.js";
 import adminModel from "../model/admin.model.js";
 import sendVerification from "../mail/mailVarification.js";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -30,7 +32,7 @@ export const getFaculty = async (req, res) => {
 
   const validateAdminId = await adminModel.findById(adminid);
   if (!validateAdminId) {
-    return handleError(res, 400, "Admin not found");
+    return handleError(res, 400, "Faculty not found");
   } else {
     try {
       const getFaculty = await FacultyModel.find({ adminID: validateAdminId });
@@ -92,16 +94,23 @@ export const createFaculty = async (req, res) => {
     return handleError(res, 400, "Email already exists");
   }
 
+  // const passwordValidation =  password.length <3;
+  // if(passwordValidation){
+  //   return handleError(res, 401, "password length smaller than 3")
+  // }
+
   try {
     if (!facultyProfile) {
       return handleError(res, 400, "Please provide faculty profile");
     } else {
       if (facultyName && email && mobile && password) {
+        const salt =  await bcrypt.genSalt(12);
+        const hashPass =  await bcrypt.hash(password, salt);
         const faculty = new FacultyModel({
           facultyName: facultyName,
           email: email,
           mobile: mobile,
-          password: password,
+          password: hashPass,
           facultyProfile: facultyProfile.filename,
           adminID: id,
         });
@@ -123,6 +132,31 @@ export const createFaculty = async (req, res) => {
 };
 
 
+// ! login faculty 
+export const loginFaculty =  async(req, res)=>{
+  const {email, password} =  req.body;
+  try{
+      if(email && password){
+          const varify_email =  await FacultyModel.findOne({email: email});
+          if(!varify_email){
+            return handleError(res, 400, "Email is not registered")
+          };
+          const  compare_password =  await bcrypt.compare(password,varify_email.password);
+          if(!compare_password){
+            return handleError(res, 400, "invalid password");
+          } 
+
+          if(compare_password){
+            const token =  jwt.sign({userId: varify_email._id}, "secret", {expiresIn: "1d"});
+            return handleError(res, 200, "logged in",varify_email, token)
+          }
+      }else{
+        return handleError(res, 400, "all fields are required");
+      }
+  }catch(e){
+   return handleError(res, 500, "internal server login error")
+  }
+}
 
 // ! find  faculty by admin id and faculty id
 export const findFacultyById = async (req, res) => {
@@ -208,7 +242,7 @@ export const deleteFacultyById = async (req, res) => {
 // ! delete all faculty
 export const deleteAllFaculty = async (req, res) => {
   try {
-    3;
+    
     const deleteAllFaculties = await FacultyModel.deleteMany();
     if (deleteAllFaculties) {
       return handleError(res, 200, "All faculties deleted successfully");

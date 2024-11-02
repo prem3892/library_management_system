@@ -1,6 +1,12 @@
 
-import React, { useEffect, useState } from 'react'
+import React, {  useEffect, useState } from 'react';
 import { appId } from '../../apis/manage_api';
+import { useDispatch} from 'react-redux';
+import { createFacultyThunk } from '../../redux/facullty.slice';
+import { useNavigate } from 'react-router-dom';
+// import toast from 'react-hot-toast';
+
+
 
 function Register() {
 	const [inputData, setInputData] =  React.useState({
@@ -10,13 +16,15 @@ function Register() {
 		password: '',
 		facultyProfile: ''
 	});
-
 	const [adminID, setAdminID] =  useState('');
-	// const [image, setImage] =  useState('');
+	const dispatch =  useDispatch();
+	const navigate =  useNavigate();
 
 	useEffect(()=>{
+		
 		setAdminID(appId)
-	},[adminID]);
+	},[]);
+
 
 
 	function handleOnchange(e){
@@ -32,6 +40,7 @@ function Register() {
 			
 			}
 		}
+
 		setInputData((prev)=>({
 			...prev,
 			 [name]: type==='file'? files[0]:  value
@@ -39,15 +48,28 @@ function Register() {
 			}));
 	};
 
-
-
-	
 	async function handleSubmit(e) {
 		e.preventDefault();
 		if(inputData.facultyName && inputData.email && inputData.mobile && inputData.password && adminID && inputData.facultyProfile){
-			alert("Data successfully submitted");
+			const {facultyName, email, mobile, password, facultyProfile} =  inputData;
+			const formData =  new FormData();
+			formData.append("facultyName", facultyName);
+			formData.append("email", email);
+			formData.append("mobile", mobile);
+			formData.append("password", password);
+			formData.append("facultyProfile", facultyProfile);
+			formData.append("adminID", adminID);
+			try{
+				await dispatch(createFacultyThunk(formData)).unwrap();
+				alert("Data successfully submitted");
+				navigate("/login", {replace: true})
+				
+			}catch(e){
+			
+				return console.log(e.message);
+			}
 		}else{
-			alert("All fields are required");
+			alert('all fields are required')
 		}
 	} 
 
@@ -55,6 +77,7 @@ function Register() {
 
   return (
     <div>
+	
         <section className="p-6 dark:bg-gray-100 dark:text-gray-900">
             <h1 className=' capitalize  text-center font-bold tracking-wider lg:text-4xl md:text-xl text-sm'>register user</h1>
 	<form onSubmit={handleSubmit} action="" encType='multipart/form-data' className="container flex flex-col mx-auto space-y-12">

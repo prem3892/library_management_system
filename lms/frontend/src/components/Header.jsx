@@ -1,7 +1,11 @@
+// import {  useContext, useEffect } from "react"
 import { NavLink } from "react-router-dom"
 
 
+
 function Header() {
+
+
   return (
     <div>
       <div className="navbar header fixed left-0 right-0 top-0 z-10">

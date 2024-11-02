@@ -9,6 +9,7 @@ import Register from './components/pages/Register'
 import Login from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
 
+
 function App() {
   return (
     <BrowserRouter>
@@ -24,4 +25,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

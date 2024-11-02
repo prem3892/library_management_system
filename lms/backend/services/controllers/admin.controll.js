@@ -40,19 +40,19 @@ export const getAdmin = async (req, res) => {
 // ! create admin account
 
 export const createAdmin = async (req, res) => {
-  const { user, email, password } = req.body;
-  const profile = req.file;
+  const { adminUser, adminEmail, adminPassword } = req.body;
+  const adminProfile = req.file;
 
   try {
-    if (user && email && profile && password) {
-      const adminUser = new adminModel({
-        user: user,
-        email: email,
-        password: password,
-        profile: profile.filename,
+    if (adminUser && adminEmail && adminProfile && adminPassword) {
+      const user = new adminModel({
+        adminUser: adminUser,
+        adminEmail: adminEmail,
+        adminPassword: adminPassword,
+        adminProfile: adminProfile.filename,
       });
 
-      const saveAdmin = await adminUser.save();
+      const saveAdmin = await user.save();
       if (!saveAdmin) {
         handleError(res, 400, "cannot save admin account");
       } else {

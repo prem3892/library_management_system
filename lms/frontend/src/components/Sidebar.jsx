@@ -1,10 +1,34 @@
 
-
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import {NavLink, useNavigate} from 'react-router-dom';
 function Sidebar() {
+	const navigate =  useNavigate();
+	
+	const token = localStorage.getItem("token");
+	const facultyProfile = useSelector(state => state.faculty.faculty);
+	const storedProfilePicture = localStorage.getItem("facultyProfile");
+  
+	useEffect(() => {
+	  if (!token) {
+		navigate("/login");
+	  }
+	}, [token]);
+  
+
+
+	function handleLogout(){
+		alert("you are logged out");
+		localStorage.clear();
+	}
   return (
     <div className="h-full p-3 space-y-2 w-60 bg-white text-gray-950">
 	<div className="flex items-center p-2 space-x-4">
-		<img src="https://source.unsplash.com/100x100/?portrait" alt="" className="w-12 h-12 rounded-full dark:bg-gray-500" />
+	{storedProfilePicture || facultyProfile ? (
+          <img src={storedProfilePicture || facultyProfile} alt="" className="w-12 h-12 rounded-full dark:bg-gray-500" />
+        ) : (
+          <img src='' alt="" className="w-12 h-12 rounded-full dark:bg-gray-500" />
+        )}
 		<div>
 			<h2 className="text-lg font-semibold">Leroy Jenkins</h2>
 			<span className="flex items-center space-x-1">
@@ -69,13 +93,13 @@ function Sidebar() {
 				</a>
 			</li>
 			<li>
-				<a rel="noopener noreferrer" href="#" className="flex items-center p-2 space-x-3 rounded-md">
+				<NavLink onClick={handleLogout} rel="noopener noreferrer" href="#" className="flex items-center p-2 space-x-3 rounded-md">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="w-5 h-5 fill-current dark:text-gray-600">
 						<path d="M440,424V88H352V13.005L88,58.522V424H16v32h86.9L352,490.358V120h56V456h88V424ZM320,453.642,120,426.056V85.478L320,51Z"></path>
 						<rect width="32" height="64" x="256" y="232"></rect>
 					</svg>
 					<span>Logout</span>
-				</a>
+				</NavLink>
 			</li>
 		</ul>
 	</div>

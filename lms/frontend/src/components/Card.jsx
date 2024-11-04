@@ -4,7 +4,7 @@ import React from 'react'
 function Card() {
   return (
     <>
-      <div className="card bg-base-100 w-[300px] shadow-xl text-black pb-4 px-2">
+      <div className="card bg-base-100 w-[300px] h-[375px] shadow-xl text-black pb-4 px-2 bg-red-100">
   <figure className='w-full h-[200px] p-1'>
     <img
     className='w-full h-full card'

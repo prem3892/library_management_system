@@ -3,10 +3,10 @@ import { courseMulter, createCourseByFaculty, deleteAllCourses, getCourse, getCo
 const courseRoute =  express.Router();
 
 
-courseRoute.get("/getCourse", getCourse)
+courseRoute.get("/:adminID/getCourse", getCourse)
 courseRoute.get("/faculty/:id/courses", getCourseByFaculty);
-courseRoute.post("/faculty/:id/courses", courseMulter.single('coursePdf'), createCourseByFaculty);
-courseRoute.delete("/deleteallcourse", deleteAllCourses);
+courseRoute.post("/faculty/:id/add-course", courseMulter.single('coursePdf'), createCourseByFaculty);
+courseRoute.delete("/:adminID/deleteallcourse", deleteAllCourses);
 
 export default courseRoute;
 

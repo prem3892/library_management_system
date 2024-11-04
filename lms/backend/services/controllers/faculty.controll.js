@@ -213,7 +213,7 @@ export const deleteFacultyById = async (req, res) => {
     const facultyId = await FacultyModel.findByIdAndDelete(validateFacultyId);
     if (facultyId) {
       const deleteCoursesAssociated = await courseModel.deleteMany({
-        courseId: validateFacultyId,
+        facultyId: validateFacultyId,
       });
 
       if (deleteCoursesAssociated) {
@@ -241,14 +241,21 @@ export const deleteFacultyById = async (req, res) => {
 
 // ! delete all faculty
 export const deleteAllFaculty = async (req, res) => {
+  
+  const {adminID} =  req.params;
   try {
+    if(!adminID){
+      return handleError(res, 404, "admin id not found");
+    }else{
     
-    const deleteAllFaculties = await FacultyModel.deleteMany();
-    if (deleteAllFaculties) {
-      return handleError(res, 200, "All faculties deleted successfully");
-    } else {
-      return handleError(res, 400, "cannot delete faculties");
+      const deleteAllFaculties = await FacultyModel.deleteMany();
+      if (deleteAllFaculties) {
+        return handleError(res, 200, "All faculties deleted successfully");
+      } else {
+        return handleError(res, 400, "cannot delete faculties");
+      }
     }
+
   } catch (e) {
     return handleError(res, 500, e.message);
   }

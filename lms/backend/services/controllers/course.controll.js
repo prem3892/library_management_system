@@ -2,6 +2,7 @@ import handleError from "../errors/handle.error.js"
 import courseModel from "../model/course.model.js"
 import multer from 'multer';
 import FacultyModel from "../model/faculty.model.js";
+import adminModel from "../model/admin.model.js";
 
 
 
@@ -18,8 +19,19 @@ export const courseMulter =  multer({storage: storage});
 
 
 export const getCourse =  async(req, res)=>{
+    const adminID =  req.params.adminID;
+
+    if(!adminID){
+        return handleError(res, 404, "adminID not found")
+    };
+
+    const verifyID =  await adminModel.findById(adminID)
+    if(!verifyID){
+        return handleError(res, 404, "invalid admin ID")
+    }
+
     try{
-        const getCourse = await courseModel.find();
+        const getCourse = await courseModel.find().populate("facultyId")
         if(getCourse){
             return handleError(res, 200, getCourse)
         }else{
@@ -38,7 +50,7 @@ export const getCourseByFaculty =  async(req, res)=>{
             return handleError(res, 400, "Faculty not found")
         }
         
-        const getCourseByFaculty = await courseModel.find({courseId:id});
+        const getCourseByFaculty = await courseModel.find({facultyId:id});
         if(getCourseByFaculty){
             return handleError(res, 200, getCourseByFaculty)
         }else{
@@ -51,25 +63,32 @@ export const getCourseByFaculty =  async(req, res)=>{
 
 
 export const createCourseByFaculty = async(req, res)=>{
-    const facultyId = req.params.id;
-    const {courseTitle, courseContent, courseId, author} =  req.body;
+    const fId = req.params.id;
+    const {courseTitle, courseContent, facultyId, author} =  req.body;
     const coursePdf =  req.file;
-    if(!coursePdf){
-        return handleError(res, 400, "Please provide course pdf");
-    }
 
-    const faculty = await FacultyModel.findById(facultyId);
+    const faculty = await FacultyModel.findById(fId);
     if(!faculty){
 
         return handleError(res, 400, "Faculty not found")
     }
 
+    if(faculty._id.toString() !== facultyId){
+        return handleError(res, 401, "faculty iD dosn't match")
+    }
+
+    if(!coursePdf){
+        return handleError(res, 400, "Please provide course pdf");
+    }
+
+  
+
     try{
-        if(courseTitle && courseContent && courseId && author){
-            const createCourseByFaculty = courseModel({
+        if(courseTitle && courseContent && facultyId && author){
+            const createCourseByFaculty = new courseModel({
                 courseTitle: courseTitle,
                 courseContent: courseContent,
-                courseId: facultyId,
+                facultyId: facultyId,
                 coursePdf: coursePdf.filename,
                 author: author,
                
@@ -95,6 +114,15 @@ export const createCourseByFaculty = async(req, res)=>{
 // ! delete all courses
 
 export const deleteAllCourses = async(req, res)=>{
+    var {adminID} =  req.params;
+    if(!adminID){
+        return handleError(res, 404, "admin id not found")
+    }
+    
+    const verifyAdminID =  await adminModel.findById(adminID);
+    if(!verifyAdminID){
+        return handleError(res, 401, "admin id is invalid")
+    }
     try{
         const deleteAllCoursesQuery = await courseModel.deleteMany();
         if(deleteAllCoursesQuery){
@@ -106,3 +134,5 @@ export const deleteAllCourses = async(req, res)=>{
       return  handleError(res, 500, e.message)
     }
 }
+
+

@@ -6,7 +6,7 @@ const courseSchema =  new mongoose.Schema({
     courseContent: String,
     coursePdf: String,
     author: String,
-    courseId: {
+    facultyId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "faculty",
         required: true

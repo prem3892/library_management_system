@@ -8,6 +8,8 @@ import HeroSection from './components/pages/HeroSection'
 import Register from './components/pages/Register'
 import Login from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
+import AddCourse from './components/pages/AddCourse';
+import EdictCourse from './components/pages/EditCourse';
 
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
       <Route path='/register' element={<Register />}/>
       <Route path='/login' element={<Login />}/>
       <Route path='/dashboard' element={<Dashboard />}/>
+      <Route path='/add-course' element={<AddCourse />}/>
+      <Route path='/edit-course' element={<EdictCourse />}/>
       </Routes>  
       <Footer />  
     </BrowserRouter>

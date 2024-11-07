@@ -1,9 +1,17 @@
-appId =  6720d96da81467d92b50042f
+appId =  672388a94a7edf80fc5bf4e1
 
-create_facultyAPi =  http://localhost:8585/api/v1//admin/6720d96da81467d92b50042f/createFaculty
+create_facultyAPi =  http://localhost:8585/admin/672388a94a7edf80fc5bf4e1/createFaculty
 login_faculty =  http://localhost:8585/login
 faculty profile =  http://localhost:8585/faculty/faculty.jpg;
 
+
+
+courseTitle, courseContent, facultyId, author =  req.body;
+     coursePdf 
+
+create card api =  http://localhost:8585/faculty/:id/add-course
+
+get cards by admin  =  http://localhost:8585/672388a94a7edf80fc5bf4e1/getCourse
 
 
 <!-- login  or delete faculty toke varify  -->

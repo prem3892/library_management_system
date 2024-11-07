@@ -5,7 +5,10 @@ import axios from 'axios';
 
 export const appId =  "672388a94a7edf80fc5bf4e1";
 const createFacultyAPi =  "http://localhost:8585/admin/672388a94a7edf80fc5bf4e1/createFaculty";
-const loginFacultyApi =  "http://localhost:8585/login"
+const loginFacultyApi =  "http://localhost:8585/login";
+const cardAPI =  "http://localhost:8585/672388a94a7edf80fc5bf4e1/getCourse"
+
+// const cardAPI =  "http://localhost:8585/faculty/:id/add-course"
 
 // ! create api call
 export const createFaculty =  async(formData)=>{
@@ -40,5 +43,30 @@ export const loginFaculty =  async(formData)=>{
        else{
             throw new Error("server error")
         }
+    }
+}
+
+
+
+// !    card apis 
+
+export const addCard =  async(formData)=>{
+    const facultyID =  formData.get("facultyId")
+    try{
+const response =  await axios.post(`http://localhost:8585/faculty/${facultyID}/add-course`,formData);
+return response.data;
+    }catch(e){
+        console.log(e)
+    }
+}
+
+// ! fetchCard 
+export const fetchCard =  async()=>{
+    try{
+        const response =  await axios.get(cardAPI);
+        return response.data;
+    }catch(e){
+        console.log(e);
+        throw new Error(e.message)
     }
 }

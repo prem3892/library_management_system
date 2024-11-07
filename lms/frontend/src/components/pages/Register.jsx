@@ -20,8 +20,9 @@ function Register() {
 	const dispatch =  useDispatch();
 	const navigate =  useNavigate();
 
+
+	
 	useEffect(()=>{
-		
 		setAdminID(appId)
 	},[]);
 

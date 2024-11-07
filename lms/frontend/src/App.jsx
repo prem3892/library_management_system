@@ -21,7 +21,7 @@ function App() {
       <Route path='/register' element={<Register />}/>
       <Route path='/login' element={<Login />}/>
       <Route path='/dashboard' element={<Dashboard />}/>
-      <Route path='/add-course' element={<AddCourse />}/>
+      <Route path='/add-course/:id' element={<AddCourse />}/>
       <Route path='/edit-course' element={<EdictCourse />}/>
       </Routes>  
       <Footer />  

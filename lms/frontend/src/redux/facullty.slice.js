@@ -21,8 +21,9 @@ export const loginFacultyThunk =  createAsyncThunk("login", async(formData, {rej
             const facultyProfile =  result.data.facultyProfile;
             localStorage.setItem("token", token);
             localStorage.setItem("email", formData.email);
-            localStorage.setItem("facultyProfile", facultyProfile)
-                return facultyProfile;
+            localStorage.setItem("facultyProfile", facultyProfile);
+            localStorage.setItem("facultyID", result.data._id);
+                return result.data;
         }
     }catch(e){
         return rejectWithValue(e.message);

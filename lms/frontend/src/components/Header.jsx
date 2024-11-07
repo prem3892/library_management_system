@@ -1,9 +1,17 @@
 // import {  useContext, useEffect } from "react"
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom"
 
 
 
 function Header() {
+  const token =  localStorage.getItem("token");
+  const [isActive, setIsActive] =  useState(true);
+  useEffect(()=>{
+    if(token){
+      setIsActive(isActive)
+    }
+  }, [token])
 
 
   return (
@@ -58,7 +66,8 @@ function Header() {
   </div>
   <div className="navbar-end flex gap-4 ">
     <NavLink to='/register' className="btn sm:btn-md xs:btn-sm btn-info">Sign Up</NavLink>
-    <NavLink to='/login' className="btn sm:btn-md xs:btn-sm btn-info">Sign In</NavLink>
+    <NavLink to='/login' className="btn sm:btn-md xs:btn-sm btn-info" >Sign In</NavLink>
+    <button disabled={token ? isActive: !isActive} className="btn btn-primary disable">login</button>
   </div>
 </div>
     </div>

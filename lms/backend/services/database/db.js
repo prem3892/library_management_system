@@ -3,7 +3,6 @@ import  'dotenv/config'
 const connStr =  process.env.DB;
 
 if(!connStr){
-    // throw new Error("missing conn string");
  throw new Error("missing conn string") 
 
 }
@@ -19,7 +18,6 @@ const db =  async()=>{
         }
 
     }catch(err){
-    //    throw new Error(err)
     console.log("Failed to connect to DB")
     }
 }

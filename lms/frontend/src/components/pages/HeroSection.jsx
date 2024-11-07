@@ -1,8 +1,25 @@
 /* eslint-disable no-unused-vars */
-import React from 'react';
-import Card from '../Card';
+import React, { useEffect, useState } from 'react';
+import HomeCard from '../HomeCard';
+import { useDispatch, useSelector } from 'react-redux';
+import { searchCard } from '../../redux/card.slice';
+
 
 function HeroSection() {
+
+  
+const dispatch =  useDispatch();
+const result =  useSelector(state=>state.card.searchCard);
+console.log(result);
+const [search, setSearch] =  useState('')
+
+useEffect(()=>{
+  dispatch(searchCard(search))
+},[search])
+
+
+
+
   return (
 
     <main className='m-4'>
@@ -40,8 +57,10 @@ function HeroSection() {
   
    </section>
 
+    <input onChange={(e)=>setSearch(e.target.value)} type="text" name="search" id="" className='text-black' />
    <section className='section2 flex flex-wrap gap-4 justify-evenly'>
-    <Card />
+
+<HomeCard  />
    
    </section>
   

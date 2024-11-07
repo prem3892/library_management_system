@@ -50,7 +50,7 @@ export const getCourseByFaculty =  async(req, res)=>{
             return handleError(res, 400, "Faculty not found")
         }
         
-        const getCourseByFaculty = await courseModel.find({facultyId:id});
+        const getCourseByFaculty = await courseModel.find({facultyId:id}).populate('facultyId')
         if(getCourseByFaculty){
             return handleError(res, 200, getCourseByFaculty)
         }else{

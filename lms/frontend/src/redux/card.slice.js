@@ -1,6 +1,9 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import { addCard, fetchCard } from '../apis/manage_api';
+import { addCard, displayCards, fetchCard } from '../apis/manage_api';
 
+
+
+// ! add card thunk by faculty id 
 export const addCardThunk =  createAsyncThunk("add-card", async(formData, {rejectWithValue})=>{
     try{
         const result =  await addCard(formData);
@@ -10,23 +13,40 @@ export const addCardThunk =  createAsyncThunk("add-card", async(formData, {rejec
     }
 });
 
-export const fetchCardThunk =  createAsyncThunk('get-card', async()=>{
+// ! fetch card by faculty id thunk 
+export const fetchCardThunk =  createAsyncThunk('get-card', async(id)=>{
     try{
-        const result =  await fetchCard();
+        const result =  await fetchCard(id);
         return result.message;
     }catch(e){
         console.log(e)
     }
 })
 
+// ! display all card on home page by admin 
+export const displaycardThunk =  createAsyncThunk("display-card", async()=>{
+    try{
+const result  =  await displayCards();
+
+return result;
+    }catch(e){
+        console.log(e)
+    }
+})
 
 const cardSlice =  createSlice({
     name: "card",
     initialState: {
         card: [],
-        loading: false
+        homeCard:[],
+        loading: false,
+        searchCard: []
     },
-    reducers: {},
+    reducers: {
+        searchCard: (state, action)=>{
+            state.searchCard =  state.homeCard.filter((i)=>i.courseTitle.toLowerCase() === action.payload.toLowerCase());
+        }
+    },
     extraReducers: (builder)=>{
         builder.addCase(addCardThunk.pending, (state, action)=>{
             state.loading =  true;
@@ -52,7 +72,21 @@ const cardSlice =  createSlice({
         builder.addCase(fetchCardThunk.rejected, (state, aciton)=>{
             state.loading =  true;
         })
+        // ! display all  card thunk
+        builder.addCase(displaycardThunk.pending, (state, action)=>{
+            state.loading =  true;
+        });
+        builder.addCase(displaycardThunk.fulfilled, (state, action)=>{
+            state.loading =  false;
+            state.homeCard =   action.payload;
+        });
+
+        builder.addCase(displaycardThunk.rejected, (state, aciton)=>{
+            state.loading =  true;
+        })
     }
 })
+
+export const {searchCard} =  cardSlice.actions;
 
 export default  cardSlice.reducer;

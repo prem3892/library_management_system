@@ -1,14 +1,12 @@
 
 import axios from 'axios';
-// import toast from 'react-hot-toast'; 
+import toast from 'react-hot-toast'; 
 
 
 export const appId =  "672388a94a7edf80fc5bf4e1";
 const createFacultyAPi =  "http://localhost:8585/admin/672388a94a7edf80fc5bf4e1/createFaculty";
 const loginFacultyApi =  "http://localhost:8585/login";
-const cardAPI =  "http://localhost:8585/672388a94a7edf80fc5bf4e1/getCourse"
-
-// const cardAPI =  "http://localhost:8585/faculty/:id/add-course"
+const displayCardHomeApi =  "http://localhost:8585/672388a94a7edf80fc5bf4e1/getCourse"
 
 // ! create api call
 export const createFaculty =  async(formData)=>{
@@ -18,7 +16,7 @@ export const createFaculty =  async(formData)=>{
     }catch(e){
         console.log(e.response.data)
         if(e.response.status === 401){
-            // toast.error("password error");
+            toast.error("password error");
             throw new Error(alert("invalid password length"));
         }
 
@@ -56,17 +54,31 @@ export const addCard =  async(formData)=>{
 const response =  await axios.post(`http://localhost:8585/faculty/${facultyID}/add-course`,formData);
 return response.data;
     }catch(e){
-        console.log(e)
+        console.log(e);
+        return;
     }
 }
 
-// ! fetchCard 
-export const fetchCard =  async()=>{
+// ! fetchCard  using faculty
+export const fetchCard =  async(id)=>{
     try{
-        const response =  await axios.get(cardAPI);
+        const response =  await axios.get(`http://localhost:8585/faculty/${id}/courses`);
         return response.data;
     }catch(e){
-        console.log(e);
+        if(e.response.message === "Faculty not found"){
+            console.log(e);
+            throw new Error("Faculty not found")
+        }   
+    }
+}
+
+// !  display all cards home page 
+export const displayCards =  async()=>{
+    try
+    {
+const response =  await axios.get(displayCardHomeApi);
+return response.data.message;
+    }catch(e){
         throw new Error(e.message)
     }
 }

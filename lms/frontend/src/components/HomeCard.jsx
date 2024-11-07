@@ -1,34 +1,18 @@
-/* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchCardThunk } from '../redux/card.slice';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { displaycardThunk } from '../redux/card.slice';
 
-function Card() {
-  const {card, loading} =  useSelector(state=>state.card);
-  const user =  localStorage.getItem("facultyName");
-  const id =  localStorage.getItem("facultyID")
-  const [author, setAuthor] =  useState('')
-
-const dispatch =  useDispatch();
-  useEffect(()=>{
-    dispatch(fetchCardThunk(id));
-    if(user){
-     return setAuthor(user)
-    }
-  },[author]);
-
-
-  if(loading){
-    return <h1>loading</h1>
-  }
-
-  if (!Array.isArray(card)) {
-    return <div>No data available</div>;
-  }
-
+function HomeCard() {
+  const card =  useSelector(state=>state.card.homeCard);
+  const dispatch =  useDispatch();
+  
+    useEffect(()=>{
+        dispatch(displaycardThunk());
+    },[])
 
   return (
-    <>
+    
+       <>
     {
      Array.isArray(card) && card  ? card.map((res, index)=>(
         <div key={index} className="card bg-base-100 w-[300px] h-[375px] shadow-xl text-black pb-4 px-2 bg-red-100">
@@ -43,7 +27,7 @@ const dispatch =  useDispatch();
           <p className='capitalize'><span className='font-bold'>course title: {res.courseContent} </span></p>
           </div>
           <div className="flex justify-between items-center  w-full px-2 mt-4">
-              <p className=' capitalize'><span className=' font-bold'>author: {author} </span></p>
+              <p className=' capitalize'><span className=' font-bold'>author: {res.facultyId.facultyName} </span></p>
             <button className="btn sm:btn-sm btn-primary caption-top capitalize">download Now</button>
           </div>
   
@@ -56,7 +40,8 @@ const dispatch =  useDispatch();
     }
   
     </>
+  
   )
 }
 
-export default Card
+export default HomeCard

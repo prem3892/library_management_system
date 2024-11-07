@@ -44,3 +44,4 @@ get cards by admin  =  http://localhost:8585/672388a94a7edf80fc5bf4e1/getCourse
 };
 
 app.use(authenticate); // Apply middleware to protected routes -->
+

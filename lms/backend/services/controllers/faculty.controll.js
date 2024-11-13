@@ -6,12 +6,14 @@ import adminModel from "../model/admin.model.js";
 import sendVerification from "../mail/mailVarification.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
+import path from 'path';
 
+const facultyDirPath =  path.join("public/faculty");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     return cb(
       null,
-      "/Users/premr/Desktop/library_management_system/library_management_system/lms/backend/public/faculty"
+      facultyDirPath
     );
   },
 

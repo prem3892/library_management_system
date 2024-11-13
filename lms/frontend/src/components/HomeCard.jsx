@@ -35,7 +35,7 @@ function HomeCard() {
       ))
       : 
       <div>
-        <h1 className='text-capitalize text-xl'>loading</h1>
+        <h1 className='text-capitalize text-xl'>loading...</h1>
       </div>
     }
   

@@ -2,14 +2,15 @@ import multer from "multer";
 import handleError from "../errors/handle.error.js";
 import adminModel from "../model/admin.model.js";
 import FacultyModel from "../model/faculty.model.js";
-
+import path from 'path';
 // ! multer here  for admin
 
+const adminDirPath =  path.join("public/admin")
 const store = multer.diskStorage({
   destination: (req, file, cb) => {
     return cb(
       null,
-      "/Users/premr/Desktop/library_management_system/library_management_system/lms/backend/public/admin"
+      adminDirPath
     );
   },
 

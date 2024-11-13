@@ -26,25 +26,31 @@ const dispatch =  useDispatch();
     return <div>No data available</div>;
   }
 
+  function showPdf(pdf){
+      if(user){
+        window.open(`http://localhost:8585/course/${pdf}` )
+      }
+  }
+
 
   return (
     <>
     {
      Array.isArray(card) && card  ? card.map((res, index)=>(
-        <div key={index} className="card bg-base-100 w-[300px] h-[375px] shadow-xl text-black pb-4 px-2 bg-red-100">
+        <div key={index} className="card w-[300px] h-[330px] shadow-xl text-black   px-1 bg-red-100">
         <figure className='w-full h-[200px] p-1'>
           <img
           className='w-full h-full card'
             src="https://img.freepik.com/premium-vector/female-teacher-with-pointer-stick-vector-white-background_1026278-17015.jpg?semt=ais_hybrid"
             alt="Shoes" />
         </figure>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2 ">
           <h2 className=" capitalize"><span className='font-bold'>course: </span> {res.courseTitle}</h2>
           <p className='capitalize'><span className='font-bold'>course title: {res.courseContent} </span></p>
           </div>
-          <div className="flex justify-between items-center  w-full px-2 mt-4">
-              <p className=' capitalize'><span className=' font-bold'>author: {author} </span></p>
-            <button className="btn sm:btn-sm btn-primary caption-top capitalize">download Now</button>
+          <div className="flex justify-between items-center   w-full px-2 mt-1">
+              <p className=' capitalize'><span className='  font-bold'>author: {author} </span></p>
+            <button className="btn sm:btn-sm btn-primary  caption-top capitalize" onClick={()=>showPdf(res.coursePdf)}>download Now</button>
           </div>
   
       </div>
@@ -60,3 +66,4 @@ const dispatch =  useDispatch();
 }
 
 export default Card
+

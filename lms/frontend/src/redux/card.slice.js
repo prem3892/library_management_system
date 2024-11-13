@@ -27,7 +27,6 @@ export const fetchCardThunk =  createAsyncThunk('get-card', async(id)=>{
 export const displaycardThunk =  createAsyncThunk("display-card", async()=>{
     try{
 const result  =  await displayCards();
-
 return result;
     }catch(e){
         console.log(e)

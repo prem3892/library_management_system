@@ -5,6 +5,9 @@ import toast from 'react-hot-toast';
 
 export const appId =  "672388a94a7edf80fc5bf4e1";
 const createFacultyAPi =  "http://localhost:8585/admin/672388a94a7edf80fc5bf4e1/createFaculty";
+
+
+// "/api/v1/login"
 const loginFacultyApi =  "http://localhost:8585/login";
 const displayCardHomeApi =  "http://localhost:8585/672388a94a7edf80fc5bf4e1/getCourse"
 
@@ -19,7 +22,6 @@ export const createFaculty =  async(formData)=>{
             toast.error("password error");
             throw new Error(alert("invalid password length"));
         }
-
         if(e.response.status === 400){
             throw new Error(alert("Email already exists"))
         }
@@ -66,7 +68,6 @@ export const fetchCard =  async(id)=>{
         return response.data;
     }catch(e){
         if(e.response.message === "Faculty not found"){
-            console.log(e);
             throw new Error("Faculty not found")
         }   
     }

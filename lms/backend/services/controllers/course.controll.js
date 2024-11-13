@@ -3,12 +3,12 @@ import courseModel from "../model/course.model.js"
 import multer from 'multer';
 import FacultyModel from "../model/faculty.model.js";
 import adminModel from "../model/admin.model.js";
+import path from 'path';
 
-
-
+const courseDirPath =  path.join("public/courses");
 const storage =  multer.diskStorage({
     destination: (req, file, cb)=>{
-        return cb(null, "/Users/premr/Desktop/library_management_system/library_management_system/lms/backend/public/courses")
+        return cb(null, courseDirPath);
     },
     filename: (req, file, cb) => {
         return cb(null, file.originalname);

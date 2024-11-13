@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../Sidebar'
 import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { addCardThunk } from '../../redux/card.slice';
 
 function AddCourse() {
@@ -15,8 +15,6 @@ function AddCourse() {
 const {id} =  useParams();
 const [facultyID, setFacultyID] =  useState('');
 const dispatch =  useDispatch();
-const resultcard = useSelector(state=>state.card.card);
-console.log(resultcard)
 useEffect(()=>{
 if(id){
   setFacultyID(id)

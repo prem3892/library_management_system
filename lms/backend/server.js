@@ -3,7 +3,7 @@ const app = express();
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import  'dotenv/config'
-const port  =  process.env.PORT;
+const port  =  process.env.PORT || 4000;
 import fs from 'fs';
 import db from './services/database/db.js';
 import cors from 'cors';
@@ -14,16 +14,14 @@ const streame = fs.createWriteStream("./services/logs/config.txt", {flags: "a"})
 
 app.use(cors("*"));
 app.use(morgan('combined', {stream: streame}));
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json({ limit: '10mb' })); // Adjust the limit as needed
+app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 // ! static path
-const coursesPath = path.join("public/courses");
-const facultyPath =  path.join("public/faculty")
-app.use("/course", express.static(coursesPath));
-app.use("/faculty", express.static(facultyPath));
+const staticCoursesPath = path.join("public/courses");
+const statisFacultyPath =  path.join("public/faculty")
+app.use("/course", express.static(staticCoursesPath));
+app.use("/faculty", express.static(statisFacultyPath));
 
 
 //! db

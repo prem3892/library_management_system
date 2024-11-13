@@ -23,7 +23,6 @@ export const loginFacultyThunk =  createAsyncThunk("login", async(formData, {rej
             localStorage.setItem("email", formData.email);
             localStorage.setItem("facultyProfile", facultyProfile);
             localStorage.setItem("facultyID", result.data._id);
-            console.log(result)
             localStorage.setItem("facultyName", result.data.facultyName);
                 return result.data;
         }

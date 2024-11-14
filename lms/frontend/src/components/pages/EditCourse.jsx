@@ -1,14 +1,22 @@
-/* eslint-disable no-unused-vars */
+
 
 import { useEffect, useState } from 'react';
 import Sidebar from '../Sidebar'
 import {useParams} from 'react-router-dom'
 import {useSelector, useDispatch} from 'react-redux'
+import { fetchCardThunk } from '../../redux/card.slice';
 function EdictCourse() {
   const {id} =  useParams();
-  // const course =  useSelector(state=>state.course.course);
-  // console.log(course)
-  // const dispatch=   useDispatch();
+  console.log(id)
+  const course =  useSelector(state=>state.card.card);;
+  console.log(course)
+  const dispatch=   useDispatch();
+
+  useEffect(()=>{
+    dispatch(fetchCardThunk(id));
+   
+  },[dispatch, id]);
+
 const [val, setval] =  useState({
   courseTitle: '',
   courseContent: '',

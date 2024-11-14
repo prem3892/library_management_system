@@ -7,7 +7,7 @@ function Sidebar() {
 	const token = localStorage.getItem("token");
 	const storedProfilePicture = localStorage.getItem("facultyProfile");
 	const fID = localStorage.getItem("facultyID");
-	
+
 
 	useEffect(() => {
 	  if (!token) {

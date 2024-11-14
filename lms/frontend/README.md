@@ -13,6 +13,10 @@ create card api =  http://localhost:8585/faculty/:id/add-course
 
 get cards by admin  =  http://localhost:8585/672388a94a7edf80fc5bf4e1/getCourse
 
+delete course by faculty id and course id = http://localhost:8585/faculty/672cae01b2a74b1249612124/course-delete/672cae36b2a74b1249612128
+
+update course by faculty id  = http://localhost:8585/faculty/672cae01b2a74b1249612124/update-course/672cae7cb2a74b1249612132
+
 
 <!-- login  or delete faculty toke varify  -->
 <!-- app.delete('/faculty/:id', authenticate, async (req, res) => {

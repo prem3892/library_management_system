@@ -83,3 +83,16 @@ return response.data.message;
         throw new Error(e.message)
     }
 }
+
+
+
+// ! update course by faculty id api 
+
+export const updateCoursebyFaculty =  async()=>{
+    try{
+        const response =  await axios.put(`http://localhost:8585/faculty/672cae01b2a74b1249612124/update-course/672cae7cb2a74b1249612132`);
+        return response.data.message
+    }catch(e){
+       return  console.log(e)
+    }
+}

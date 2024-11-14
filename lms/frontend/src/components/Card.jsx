@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCardThunk } from '../redux/card.slice';
+import { MdEdit } from "react-icons/md";
+import { FaDeleteLeft } from "react-icons/fa6";
+import { NavLink } from 'react-router-dom';
 
 function Card() {
   const {card, loading} =  useSelector(state=>state.card);
@@ -15,7 +18,7 @@ const dispatch =  useDispatch();
     if(user){
      return setAuthor(user)
     }
-  },[author]);
+  },[id, user, dispatch]);
 
 
   if(loading){
@@ -37,7 +40,11 @@ const dispatch =  useDispatch();
     <>
     {
      Array.isArray(card) && card  ? card.map((res, index)=>(
-        <div key={index} className="card w-[300px] h-[330px] shadow-xl text-black   px-1 bg-red-100">
+        <div key={index} className="card w-[300px] h-[350px] shadow-xl text-black   px-2 py-2 bg-red-100 ">
+          <div className='flex justify-between'>
+            <NavLink to={`/edit-course/${res._id}`} className='btn btn-sm btn-info'><MdEdit /></NavLink>
+            <button className='btn btn-sm btn-error'><FaDeleteLeft /></button>
+          </div>
         <figure className='w-full h-[200px] p-1'>
           <img
           className='w-full h-full card'

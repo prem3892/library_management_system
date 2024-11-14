@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import { addCard, displayCards, fetchCard } from '../apis/manage_api';
+import { addCard, displayCards, fetchCard, updateCoursebyFaculty } from '../apis/manage_api';
 
 
 
@@ -28,6 +28,17 @@ export const displaycardThunk =  createAsyncThunk("display-card", async()=>{
     try{
 const result  =  await displayCards();
 return result;
+    }catch(e){
+        console.log(e)
+    }
+});
+
+
+// ! update course thunk 
+export const updateCourseThunk =  createAsyncThunk("update-course", async()=>{
+    try{
+        const result =  await updateCoursebyFaculty();
+        return result;
     }catch(e){
         console.log(e)
     }
@@ -81,6 +92,19 @@ const cardSlice =  createSlice({
         });
 
         builder.addCase(displaycardThunk.rejected, (state, aciton)=>{
+            state.loading =  true;
+        })
+        
+        // ! update course  thunk
+        builder.addCase(updateCourseThunk.pending, (state, )=>{
+            state.loading =  true;
+        });
+        builder.addCase(updateCourseThunk.fulfilled, (state, action)=>{
+            state.loading =  false;
+            state.homeCard =   action.payload;
+        });
+
+        builder.addCase(updateCourseThunk.rejected, (state, aciton)=>{
             state.loading =  true;
         })
     }

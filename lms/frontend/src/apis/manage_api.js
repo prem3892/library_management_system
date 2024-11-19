@@ -63,10 +63,12 @@ return response.data;
 
 // ! fetchCard  using faculty
 export const fetchCard =  async(id)=>{
+    const d = String(id)
     try{
-        const response =  await axios.get(`http://localhost:8585/faculty/${id}/courses`);
+        const response =  await axios.get(`http://localhost:8585/faculty/${d}/courses`);
         return response.data;
     }catch(e){
+        console.log(e)
         if(e.response.message === "Faculty not found"){
             throw new Error("Faculty not found")
         }   
@@ -78,7 +80,7 @@ export const displayCards =  async()=>{
     try
     {
 const response =  await axios.get(displayCardHomeApi);
-return response.data.message;
+return response.data;
     }catch(e){
         throw new Error(e.message)
     }
@@ -91,8 +93,22 @@ return response.data.message;
 export const updateCoursebyFaculty =  async()=>{
     try{
         const response =  await axios.put(`http://localhost:8585/faculty/672cae01b2a74b1249612124/update-course/672cae7cb2a74b1249612132`);
-        return response.data.message
+        return response.data
     }catch(e){
        return  console.log(e)
+    }
+}
+
+// ! delete course by faculty 
+export const deleteCourseByFaculty =  async(ids)=>{
+                const {id, courseId} =  ids;
+                if(!id && !courseId){
+                    return alert("ids not found")
+                }
+    try{
+        const response =  await axios.delete(`http://localhost:8585/faculty/${id}/course-delete/${courseId}`);
+        return response.data;
+    }catch(e){
+        console.log(e)
     }
 }

@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import { addCard, displayCards, fetchCard, updateCoursebyFaculty } from '../apis/manage_api';
+import { addCard, deleteCourseByFaculty, displayCards, fetchCard, updateCoursebyFaculty } from '../apis/manage_api';
 
 
 
@@ -17,7 +17,7 @@ export const addCardThunk =  createAsyncThunk("add-card", async(formData, {rejec
 export const fetchCardThunk =  createAsyncThunk('get-card', async(id)=>{
     try{
         const result =  await fetchCard(id);
-        return result.message;
+        return result;
     }catch(e){
         console.log(e)
     }
@@ -42,20 +42,32 @@ export const updateCourseThunk =  createAsyncThunk("update-course", async()=>{
     }catch(e){
         console.log(e)
     }
+});
+
+
+// ! delete course think 
+export const deleteCourseByFacultyThunk =  createAsyncThunk("delete-course", async(ids, {rejectWithValue})=>{
+try{
+const result = await deleteCourseByFaculty(ids);
+return result;
+
+}catch(e){
+return rejectWithValue(e.message)
+}
 })
 
 const cardSlice =  createSlice({
     name: "card",
     initialState: {
         card: [],
-        homeCard:[],
+        // homeCard:[],
         loading: false,
         searchCard: []
     },
     reducers: {
-        searchCard: (state, action)=>{
-            state.searchCard =  state.homeCard.filter((i)=>i.courseTitle.toLowerCase() === action.payload.toLowerCase());
-        }
+        // searchCard: (state, action)=>{
+        //     state.searchCard =  state.homeCard.filter((i)=>i.courseTitle.toLowerCase() === action.payload.toLowerCase());
+        // }
     },
     extraReducers: (builder)=>{
         builder.addCase(addCardThunk.pending, (state, action)=>{
@@ -107,9 +119,22 @@ const cardSlice =  createSlice({
         builder.addCase(updateCourseThunk.rejected, (state, aciton)=>{
             state.loading =  true;
         })
+
+        // ! delete course  thunk
+        builder.addCase(deleteCourseByFacultyThunk.pending, (state, )=>{
+            state.loading =  true;
+        });
+        builder.addCase(deleteCourseByFacultyThunk.fulfilled, (state, action)=>{
+            state.loading =  false;
+            state.homeCard =   action.payload;
+        });
+
+        builder.addCase(deleteCourseByFacultyThunk.rejected, (state, aciton)=>{
+            state.loading =  true;
+        })
     }
 })
 
-export const {searchCard} =  cardSlice.actions;
+// export const {searchCard} =  cardSlice.actions;
 
 export default  cardSlice.reducer;

@@ -1,21 +1,21 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import HomeCard from '../HomeCard';
-import { useDispatch, useSelector } from 'react-redux';
-import { searchCard } from '../../redux/card.slice';
+// import HomeCard from '../HomeCard';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { searchCard } from '../../redux/card.slice';
 
 
 function HeroSection() {
 
   
-const dispatch =  useDispatch();
-const result =  useSelector(state=>state.card.searchCard);
-console.log(result);
-const [search, setSearch] =  useState('')
+// const dispatch =  useDispatch();
+// const result =  useSelector(state=>state.card.searchCard);
+// console.log(result);
+// const [search, setSearch] =  useState('')
 
-useEffect(()=>{
-  dispatch(searchCard(search))
-},[search])
+// useEffect(()=>{
+//   dispatch(searchCard(search))
+// },[search, dispatch])
 
 
 
@@ -57,10 +57,10 @@ useEffect(()=>{
   
    </section>
 
-    <input onChange={(e)=>setSearch(e.target.value)} type="text" name="search" id="" className='text-black' />
+    {/* <input onChange={(e)=>setSearch(e.target.value)} type="text" name="search" id="" className='text-black' /> */}
    <section className='section2 flex flex-wrap gap-4 justify-evenly'>
 
-<HomeCard  />
+{/* <HomeCard  /> */}
    
    </section>
   

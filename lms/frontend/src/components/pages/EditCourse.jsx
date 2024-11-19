@@ -7,9 +7,9 @@ import {useSelector, useDispatch} from 'react-redux'
 import { fetchCardThunk } from '../../redux/card.slice';
 function EdictCourse() {
   const {id} =  useParams();
-  console.log(id)
+  // console.log(id)
   const course =  useSelector(state=>state.card.card);;
-  console.log(course)
+  // console.log(course)
   const dispatch=   useDispatch();
 
   useEffect(()=>{
@@ -24,6 +24,35 @@ const [val, setval] =  useState({
   facultyId: '',
   coursePdf: ''
 });
+
+// useEffect(()=>{
+//   if(id || course){
+//     const findData =  course.find((i)=>i._id === id);
+//     if(findData){
+//       setval({
+//         courseTitle: findData.courseTitle || ''
+//       })
+//       console.log(findData)
+//     }else{
+//       console.log(10)
+//     }
+//   }
+// },[id, course])
+
+useEffect(() => {
+  if (id && course.message && Array.isArray(course.message)) {
+    const findData = course.find((i) => i._id === id);
+    if (findData) {
+      setval({
+        courseTitle: findData.courseTitle || '',
+        courseContent: findData.courseContent || '',
+        author: findData.author || '',
+        facultyId: findData.facultyId || '',
+        coursePdf: findData.coursePdf || ''
+      });
+    }
+  }
+}, [id, course]);
 
 
     function handleOnchangeInput(e){

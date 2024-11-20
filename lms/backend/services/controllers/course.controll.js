@@ -216,7 +216,6 @@ export const updateCourseByFacultyid =  async(req, res)=>{
                 return handleError(res, 401, "invalid course id");
             }
 
-           // Ensure the faculty ID matches the course's faculty
         if (!isvalidCourseId.facultyId.equals(isvalidFaculty._id)) {
             return res.status(401).json({ message: "Faculty ID does not match course faculty" });
         }
@@ -224,7 +223,7 @@ export const updateCourseByFacultyid =  async(req, res)=>{
         if(fid.toString() !== facultyId.toString()){
             return handleError(res, 401, "faculty not match body")
         }
-                
+             
             const updateCourse =  await courseModel.findByIdAndUpdate(cid, {
                 courseTitle: courseTitle,
                 courseContent: courseContent,

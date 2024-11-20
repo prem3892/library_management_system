@@ -17,7 +17,6 @@ export const createFaculty =  async(formData)=>{
         const response = await axios.post(createFacultyAPi, formData);
         return response.data;
     }catch(e){
-        console.log(e.response.data)
         if(e.response.status === 401){
             toast.error("password error");
             throw new Error(alert("invalid password length"));
@@ -40,12 +39,8 @@ export const loginFaculty =  async(formData)=>{
         if(e.response.data.message === "invalid password"){
             throw new Error(alert("Invalid Password"))
         }
-       else{
-            throw new Error("server error")
-        }
-    }
 }
-
+}
 
 
 // !    card apis 
@@ -75,7 +70,7 @@ export const fetchCard =  async(id)=>{
     }
 }
 
-// !  display all cards home page 
+// !  display all cards home page  by admin
 export const displayCards =  async()=>{
     try
     {

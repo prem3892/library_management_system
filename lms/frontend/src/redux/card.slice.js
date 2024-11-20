@@ -60,7 +60,7 @@ const cardSlice =  createSlice({
     name: "card",
     initialState: {
         card: [],
-        // homeCard:[],
+        homeCard:[],
         loading: false,
         searchCard: []
     },

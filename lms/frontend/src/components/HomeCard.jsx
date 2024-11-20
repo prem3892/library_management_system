@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import  { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { displaycardThunk } from '../redux/card.slice';
 
@@ -14,7 +14,7 @@ function HomeCard() {
     
        <>
     {
-     Array.isArray(card) && card  ? card.map((res, index)=>(
+     Array.isArray(card.message) && card.message.length>=0  ? card.message.map((res, index)=>(
         <div key={index} className="card bg-base-100 w-[300px] h-[375px] shadow-xl text-black pb-4 px-2 bg-red-100">
         <figure className='w-full h-[200px] p-1'>
           <img

@@ -23,7 +23,7 @@ function App() {
       <Route path='/login' element={<Login />}/>
       <Route path='/dashboard' element={<Dashboard />}/>
       <Route path='/add-course/:id' element={<AddCourse />}/>
-      <Route path='/edit-course/:id' element={<EdictCourse />}/>
+      <Route path='/edit-course/faculty/:fid/course/:cid' element={<EdictCourse />}/>
       </Routes>  
       <Footer />  
     </BrowserRouter>

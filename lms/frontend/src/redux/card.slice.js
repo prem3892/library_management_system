@@ -35,12 +35,12 @@ return result;
 
 
 // ! update course thunk 
-export const updateCourseThunk =  createAsyncThunk("update-course", async()=>{
+export const updateCourseThunk =  createAsyncThunk("update-course", async(formData, {rejectWithValue})=>{
     try{
-        const result =  await updateCoursebyFaculty();
+        const result =  await updateCoursebyFaculty(formData);
         return result;
     }catch(e){
-        console.log(e)
+       return rejectWithValue(e.message)
     }
 });
 

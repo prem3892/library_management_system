@@ -90,9 +90,14 @@ return response.data;
 
 // ! update course by faculty id api 
 
-export const updateCoursebyFaculty =  async()=>{
+export const updateCoursebyFaculty =  async(formData)=>{
+    const fid=  formData.get("fid");
+    const cid=  formData.get("cid");
+    if(!fid || !cid)
+        return alert("ids not found")
     try{
-        const response =  await axios.put(`http://localhost:8585/faculty/672cae01b2a74b1249612124/update-course/672cae7cb2a74b1249612132`);
+        
+        const response =  await axios.put(`http://localhost:8585/faculty/${fid}/update-course/${cid}`, formData);
         return response.data
     }catch(e){
        return  console.log(e)

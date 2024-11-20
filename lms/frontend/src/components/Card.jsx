@@ -9,9 +9,10 @@ import { NavLink } from 'react-router-dom';
 function Card() {
  
   const user =  localStorage.getItem("facultyName");
-  const id =  localStorage.getItem("facultyID")
+  const id =  localStorage.getItem("facultyID");
   const [author, setAuthor] =  useState('')
   const {card, loading} =  useSelector(state=>state.card);
+  
 const dispatch =  useDispatch();
   useEffect(()=>{
     if(id){
@@ -55,13 +56,14 @@ const dispatch =  useDispatch();
   }
 
 
+
   return (
     <>
     {
      Array.isArray(card.message) || card  ? card.message.map((res, index)=>(
         <div key={index} className="card w-[300px] h-[350px] shadow-xl text-black   px-2 py-2 bg-red-100 ">
           <div className='flex justify-between'>
-            <NavLink to={`/edit-course/${res._id}`} className='btn btn-sm btn-info'><MdEdit /></NavLink>
+            <NavLink to={`/edit-course/faculty/${res.facultyId._id}/course/${res._id}`} className='btn btn-sm btn-info'><MdEdit /></NavLink>
             <button onClick={()=>deleteCourse(res._id)} className='btn btn-sm btn-error'><FaDeleteLeft /></button>
           </div>
         <figure className='w-full h-[200px] p-1'>

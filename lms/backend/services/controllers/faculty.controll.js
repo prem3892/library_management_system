@@ -5,7 +5,7 @@ import courseModel from "../model/course.model.js";
 import adminModel from "../model/admin.model.js";
 import sendVerification from "../mail/mailVarification.js";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import path from 'path';
 
 const facultyDirPath =  path.join("public/faculty");
@@ -27,6 +27,7 @@ export const facultyMulter = multer({ storage: storage });
 // ! get all the faculties  by admin
 
 export const getFaculty = async (req, res) => {
+  console.log(req.userid)
   const { adminid } = req.params;
   if (!adminid) {
     return handleError(res, 400, "Please provide admin ID");
@@ -39,7 +40,7 @@ export const getFaculty = async (req, res) => {
     try {
       const getFaculty = await FacultyModel.find({ adminID: validateAdminId });
       if (getFaculty) {
-        return handleError(res, 200, "Faculty found", getFaculty);
+        return handleError(res, 200, "Faculty found", getFaculty, req.userid);
       } else {
         return handleError(res, 400, "Faculty not found");
       }
@@ -96,11 +97,6 @@ export const createFaculty = async (req, res) => {
     return handleError(res, 400, "Email already exists");
   }
 
-  // const passwordValidation =  password.length <3;
-  // if(passwordValidation){
-  //   return handleError(res, 401, "password length smaller than 3")
-  // }
-
   try {
     if (!facultyProfile) {
       return handleError(res, 400, "Please provide faculty profile");
@@ -134,7 +130,9 @@ export const createFaculty = async (req, res) => {
 };
 
 
+
 // ! login faculty 
+
 export const loginFaculty =  async(req, res)=>{
   const {email, password} =  req.body;
   try{
@@ -149,7 +147,7 @@ export const loginFaculty =  async(req, res)=>{
           } 
 
           if(compare_password){
-            const token =  jwt.sign({userId: varify_email._id}, "secret", {expiresIn: "1d"});
+            const token =  jwt.sign({userid: varify_email._id}, "secret", {expiresIn: "1m"});
             return handleError(res, 200, "logged in",varify_email, token)
           }
       }else{
@@ -160,8 +158,11 @@ export const loginFaculty =  async(req, res)=>{
   }
 }
 
+
+
 // ! find  faculty by admin id and faculty id
 export const findFacultyById = async (req, res) => {
+
   const adminId = req.params.adminId;
   const facultyId = req.params.facultyId;
 

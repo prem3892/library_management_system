@@ -1,10 +1,11 @@
 import express from 'express';
 import { createFaculty, deleteAllFaculty,  deleteFacultyById, facultyMulter, findFacultyById, getFaculty, loginFaculty } from '../controllers/faculty.controll.js';
 import verificationRoute from '../mail/emailroute.js';
+import verifyToken from '../middleware/protect.route.token.js';
 const facultyRoute =  express.Router();
 
 
-facultyRoute.get("/admin/:adminid/faculty", getFaculty);
+facultyRoute.get("/admin/:adminid/faculty", verifyToken, getFaculty);
 facultyRoute.post("/admin/:id/createFaculty/",facultyMulter.single('facultyProfile'), createFaculty);
 facultyRoute.post("/login", loginFaculty);
 facultyRoute.get("/admin/:adminId/findFaculty/:facultyId", findFacultyById);

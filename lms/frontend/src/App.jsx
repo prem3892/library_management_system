@@ -11,6 +11,7 @@ import Login from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
 import AddCourse from './components/pages/AddCourse';
 import EdictCourse from './components/pages/EditCourse';
+import ToggleRegister from './components/pages/ToggleRegister';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
       <Route path='/dashboard' element={<Dashboard />}/>
       <Route path='/add-course/:id' element={<AddCourse />}/>
       <Route path='/edit-course/faculty/:fid/course/:cid' element={<EdictCourse />}/>
+      <Route path='/toggle-register' element={<ToggleRegister />}/>
       </Routes>  
       <Footer />  
     </BrowserRouter>

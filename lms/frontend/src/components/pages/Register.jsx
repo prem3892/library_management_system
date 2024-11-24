@@ -77,10 +77,10 @@ function Register() {
 
 
   return (
-    <div>
+    <>
 	
         <section className="p-6 dark:bg-gray-100 dark:text-gray-900">
-            <h1 className=' capitalize  text-center font-bold tracking-wider lg:text-4xl md:text-xl text-sm'>register user</h1>
+            <h1 className=' capitalize  text-center font-bold tracking-wider lg:text-4xl md:text-xl text-sm'>register Faculty</h1>
 	<form onSubmit={handleSubmit} action="" encType='multipart/form-data' className="container flex flex-col mx-auto space-y-12">
 		<fieldset className="grid grid-cols-4 gap-6 p-6 rounded-md shadow-sm dark:bg-gray-50">
 			<div className="space-y-2 col-span-full lg:col-span-1">
@@ -145,7 +145,7 @@ function Register() {
 	</form>
 </section>
       
-    </div>
+    </>
   )
 }
 

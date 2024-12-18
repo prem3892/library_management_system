@@ -52,8 +52,9 @@ export const createAdmin = async (req, res) => {
         adminPassword: adminPassword,
         adminProfile: adminProfile.filename,
       });
-
+            console.log(10)
       const saveAdmin = await user.save();
+      console.log(20)
       if (!saveAdmin) {
         handleError(res, 400, "cannot save admin account");
       } else {
@@ -69,21 +70,15 @@ export const createAdmin = async (req, res) => {
 
 
 // ! delete admin and associated faculty members
-
-
-
 export const deleteAdminAndAssociatedFaculties =  async(req, res)=>{
   const { id } = req.params;
-
   if(!id){
    return handleError(res, 404, "admin id not found");
   }
-
   const varifyAdminId =  await adminModel.findById(id);
   if(!varifyAdminId){
     return handleError(res, 400, "invalid admin Id provided");
   }
-
   try{
     const deletAdminAndAssociatedFaculty =  await adminModel.findByIdAndDelete(varifyAdminId);
     if(deletAdminAndAssociatedFaculty){

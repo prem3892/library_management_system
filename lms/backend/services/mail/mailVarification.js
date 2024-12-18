@@ -6,7 +6,6 @@ const transport  =  nodemailer.createTransport({
  host: process.env.SMTP_HOST,
  port: process.env.SMTP_PORT,
  secure: false,
-//  requireTLS: false,
  auth: {
 user: process.env.SMTP_MAIL,
 pass: process.env.SMTP_PASSWORD,
@@ -29,7 +28,7 @@ const sendVerification = async(mail, subject, content) => {
                  console.log('Error: ', err);
              }
 
-             console.log('Message sent: %s', info.messageId);
+            //  console.log('Message sent: %s', info.messageId);
          });
         
     }catch(e){

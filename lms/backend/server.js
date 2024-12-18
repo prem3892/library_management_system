@@ -8,7 +8,7 @@ import fs from 'fs';
 import db from './services/database/db.js';
 import cors from 'cors';
 import path from 'path';
-
+import cookieParser from 'cookie-parser';
 const streame = fs.createWriteStream("./services/logs/config.txt", {flags: "a"});
 
 
@@ -22,13 +22,12 @@ const staticCoursesPath = path.join("public/courses");
 const statisFacultyPath =  path.join("public/faculty")
 app.use("/course", express.static(staticCoursesPath));
 app.use("/faculty", express.static(statisFacultyPath));
-
+app.use(cookieParser());
 
 //! db
 db();
 
 // ! all routes here 
-
 
 // ! admin routes 
 import adminRoute from './services/routes/admin.routes.js';
@@ -43,6 +42,11 @@ app.use("/", facultyRoute);
 //! course routes
 import courseRoute from './services/routes/course.routes.js';
 app.use("/", courseRoute);
+
+
+//! student routes
+import studentRoute from './services/routes/student.routes.js';
+app.use("/", studentRoute);
 
 
 app.listen(port, ()=>{

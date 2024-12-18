@@ -4,9 +4,13 @@ import handleError from "../errors/handle.error.js";
 
 const verificationRoute = express.Router();
 
+
+
+
+
 verificationRoute.get('/mail-verification', async (req, res) => {
     const { id } = req.query;
-
+    console.log(id)
     if (!id) {
         return handleError(res, 400, "Invalid request");
     }
@@ -21,10 +25,10 @@ verificationRoute.get('/mail-verification', async (req, res) => {
         faculty.isVerified = true; // Assuming you have an `isVerified` field
         await faculty.save();
 
-        res.status(200).send("Email verified successfully!");
+       return  res.status(200).send("Email verified successfully!");
     } catch (error) {
-        handleError(res, 500, error.message);
+       
+       return handleError(res, 500, error.message, 'error');
     }
 });
-
 export default verificationRoute;

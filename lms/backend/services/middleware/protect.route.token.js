@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
+
+
+
 export const verifyToken =  (req, res, next)=>{
-    const token =  req.headers['authorization'];
-  
+     const token = req.cookies.accessToken;
+
     if(token){
       jwt.verify(token, "secret", (err, decode)=>{
         if(err){
@@ -13,8 +16,10 @@ export const verifyToken =  (req, res, next)=>{
       })
     }else
     {
-      return res.json({message: "error"})
+      return res.json({message: "cookie not found"})
     }
   }
   
   export default verifyToken;
+
+

@@ -1,29 +1,10 @@
 import handleError from "../errors/handle.error.js";
-import multer from "multer";
 import FacultyModel from "../model/faculty.model.js";
 import courseModel from "../model/course.model.js";
 import adminModel from "../model/admin.model.js";
-import sendVerification from "../mail/mailVarification.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import path from 'path';
-import verificationRoute from "../mail/emailroute.js";
 
-const facultyDirPath =  path.join("public/faculty");
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    return cb(
-      null,
-      facultyDirPath
-    );
-  },
-
-  filename: (req, file, cb) => {
-    return cb(null, file.originalname);
-  },
-});
-
-export const facultyMulter = multer({ storage: storage });
 
 // ! get all the faculties  by admin
 
@@ -53,13 +34,15 @@ export const getFaculty = async (req, res) => {
 
 
 
-// ! create faculty
 
+
+// ! create faculty
 export const createFaculty = async (req, res) => {
  
-  const { facultyName, email, mobile, password, adminID } = req.body;
+  const { facultyName, facultyEmail, facultyMobile, facultyPassword, adminID } = req.body;
   const facultyProfile = req.file;
   const id = req.params.id;
+ 
 
   if (!id) {
     return handleError(res, 400, "Please provide admin ID");
@@ -73,31 +56,33 @@ export const createFaculty = async (req, res) => {
     return handleError(res, 401, "Admin id does not match");
   }
 
-  const checkMail = await FacultyModel.findOne({ email: email });
-  if (checkMail) {
-    return handleError(res, 400, "Email already exists");
+  const checkMail = await FacultyModel.findOne({ facultyEmail: facultyEmail });
+
+ 
+  if (checkMail && checkMail.verified) {
+    return handleError(res, 400, "Email already exists or verified");
+  }
+
+  if(checkMail && !checkMail.verified){
+    await FacultyModel.deleteOne({facultyEmail})
   }
 
   try {
     if (!facultyProfile) {
       return handleError(res, 400, "Please provide faculty profile");
     } else {
-      if (facultyName && email && mobile && password) {
+      if (facultyName && facultyEmail && facultyMobile && facultyPassword){
         const salt =  await bcrypt.genSalt(12);
-        const hashPass =  await bcrypt.hash(password, salt);
+        const hashPass =  await bcrypt.hash(facultyPassword, salt);
         const faculty = new FacultyModel({
           facultyName: facultyName,
-          email: email,
-          mobile: mobile,
-          password: hashPass,
+          facultyEmail: facultyEmail,
+          facultyMobile: facultyMobile,
+          facultyPassword: hashPass,
           facultyProfile: facultyProfile.filename,
           adminID: id,
         });
         if (faculty) {
-          const msg = `<h2>Hii ${facultyName} Please <a href='http://localhost:8585/mail-verification/?id=${faculty._id}'>Verify</a> Your Mail</h2>`;
-          sendVerification(email, "Mail verification", msg);
-          // verificationRoute()
-          // console.log(120)
           const data = await faculty.save();
           return handleError(res, 201, "Faculty created successfully", data);
         } else {
@@ -113,65 +98,78 @@ export const createFaculty = async (req, res) => {
 };
 
 
-
-// ! login faculty 
 function generateToken(user){
-   return jwt.sign({userid:user}, "secret", {expiresIn: "1m"});
+  return jwt.sign({userid:user}, "secret", {expiresIn: "1m"});
 }
 function generateRefreshToken(user){
   return jwt.sign({userid:user}, "secret", {expiresIn: "5m"});
 }
 
-// ! post route refresh token auth
 
+// ! post route refresh token auth
 export const refresh =  (req, res)=>{
   const {refreshToken} =  req.cookies;
   if(!refreshToken)
 
     return handleError(res, 400, "refreshtoken not found")
-
+    
     jwt.verify(refreshToken, "secret", (err, decode)=>{
       if(err)
-
+        
         return handleError(res, 400, "invalid token or expired")
-
+        
         const newToken =  generateToken(decode.userid);
         console.log(decode.userid)
         res.cookie("accessToken", newToken, {httpOnly:true, maxAge:5*60*1000});
         return handleError(res, 200, "token refreshed");
-    })
-}
+      })
+    }
 
-// ! login faculty 
-export const loginFaculty =  async(req, res)=>{
-  const {email, password} =  req.body;
-  try{
-   
-      if(email && password){
-          const varify_email =  await FacultyModel.findOne({email: email});
-          if(!varify_email){
-            return handleError(res, 400, "Email is not registered")
-          };
-          const  compare_password =  await bcrypt.compare(password,varify_email.password);
-          if(!compare_password){
-            return handleError(res, 400, "invalid password");
-          } 
-        
-
-          if(compare_password){
-            const token =  generateToken(varify_email._id);
-            const refreshToken =  generateRefreshToken(varify_email._id);
-            res.cookie("accessToken", token, {httpOnly:true, maxAge: 1 * 60 *1000});
-            res.cookie("refreshToken", refreshToken, {httpOnly:true, maxAge: 5 *60*1000});
-            return handleError(res, 200, "logged in",varify_email)
-          }
-      }else{
-        return handleError(res, 400, "all fields are required");
+      
+      // ! login faculty 
+export const loginFaculty = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    if (email && password) {
+      const varify_email = await FacultyModel.findOne({ email: email });
+      if (!varify_email) {
+        return handleError(res, 400, "Email is not registered");
       }
-  }catch(e){
-   return handleError(res, 500, "internal server login error")
+   
+      if (!varify_email.verified) {
+        let timeStamp =  varify_email.verificationExpire;
+        let currentTime =  Date.now()
+                let elapseTime =  currentTime -timeStamp;
+                if(elapseTime >=60000){
+                  await FacultyModel.deleteOne({email})
+                  return handleError(res, 400, "Link is expired");
+                }else{
+                  return handleError(res, 400, "Please verify your email before logging in");
+                  
+                }
+      }
+
+
+
+      const compare_password = await bcrypt.compare(password, varify_email.password);
+      if (!compare_password) {
+        return handleError(res, 400, "Invalid password");
+      }
+
+      if (compare_password) {
+        const token = generateToken(varify_email._id);
+        const refreshToken = generateRefreshToken(varify_email._id);
+        res.cookie("accessToken", token, { httpOnly: true, maxAge: 1 * 60 * 1000 });
+        res.cookie("refreshToken", refreshToken, { httpOnly: true, maxAge: 5 * 60 * 1000 });
+        return handleError(res, 200, "Logged in", varify_email);
+      }
+    } else {
+      return handleError(res, 400, "All fields are required");
+    }
+  } catch (e) {
+    return handleError(res, 500, "Internal server login error");
   }
-}
+};
 
 
 
@@ -278,6 +276,10 @@ export const deleteAllFaculty = async (req, res) => {
     return handleError(res, 500, e.message);
   }
 };
+
+
+
+
 
 
 

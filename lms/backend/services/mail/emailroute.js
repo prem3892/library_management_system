@@ -1,34 +1,42 @@
 import express from 'express';
 import FacultyModel from '../model/faculty.model.js';
 import handleError from "../errors/handle.error.js";
+import { verification } from './mailVarification.js';
 
-const verificationRoute = express.Router();
-
-
-
+const mailverificationRoute = express.Router();
 
 
-verificationRoute.get('/mail-verification', async (req, res) => {
-    const { id } = req.query;
-    console.log(id)
-    if (!id) {
+
+
+
+mailverificationRoute.get('/verifymail/:email/:token', async (req, res) => {
+
+    const {email, token} =  req.params;
+    if (!email && !token) {
         return handleError(res, 400, "Invalid request");
     }
 
     try {
-        const faculty = await FacultyModel.findById(id);
-        if (!faculty) {
-            return handleError(res, 404, "Faculty not found");
+      
+        const findUser =  await FacultyModel.findOne({facultyEmail:email});
+        if(!findUser){
+            return handleError(res, 400, "user not found")
+        }
+        const data =  verification[email]
+        
+            if(!data || data.token !==token || Date.now() > data.expires){
+                return res.render("expires")
+            }
+            
+        if(findUser){
+            findUser.verified = true; 
+            await findUser.save();
+            return res.render("verified")
         }
 
-        // Here you might want to set a flag indicating that the email has been verified
-        faculty.isVerified = true; // Assuming you have an `isVerified` field
-        await faculty.save();
-
-       return  res.status(200).send("Email verified successfully!");
     } catch (error) {
        
        return handleError(res, 500, error.message, 'error');
     }
 });
-export default verificationRoute;
+export default mailverificationRoute;

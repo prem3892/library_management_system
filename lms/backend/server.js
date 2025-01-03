@@ -24,6 +24,9 @@ app.use("/course", express.static(staticCoursesPath));
 app.use("/faculty", express.static(statisFacultyPath));
 app.use(cookieParser());
 
+app.set("view engine", "ejs")
+
+
 //! db
 db();
 
@@ -48,6 +51,9 @@ app.use("/", courseRoute);
 import studentRoute from './services/routes/student.routes.js';
 app.use("/", studentRoute);
 
+// ! mail verification route
+import mailverificationRoute from './services/mail/emailroute.js';
+app.use("/", mailverificationRoute)
 
 app.listen(port, ()=>{
     console.log(`server connected on port http://localhost:${port}`);

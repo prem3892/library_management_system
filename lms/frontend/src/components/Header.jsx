@@ -2,9 +2,7 @@
 import { NavLink } from "react-router-dom"
 
 
-
-function Header() {
-
+function Header({name}) {
   return (
     <div>
       <div className="navbar header fixed left-0 right-0 top-0 z-10">
@@ -56,9 +54,18 @@ function Header() {
     </ul>
   </div>
   <div className="navbar-end flex gap-4 ">
-    <NavLink to='/register' className="btn sm:btn-md xs:btn-sm btn-info">Sign Up</NavLink>
-    <NavLink to='/login' className="btn sm:btn-md xs:btn-sm btn-info" >Sign In</NavLink>
-    <NavLink to="/toggle-register" className="btn btn-primary disable">ToggleRegister</NavLink>
+    {
+      name ? "Welcome: "+  name :<NavLink to='/register' className="btn sm:btn-md xs:btn-sm btn-info">Sign Up</NavLink>
+    }
+
+    {
+      name ? "" :     <NavLink disa to='/login' className="btn sm:btn-md xs:btn-sm btn-info" >
+      Sign In 
+      </NavLink>
+    }
+    
+
+    {/* <NavLink to="/toggle-register" className="btn btn-primary disable">ToggleRegister</NavLink> */}
   </div>
 </div>
     </div>

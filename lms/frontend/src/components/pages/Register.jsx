@@ -11,9 +11,9 @@ import { useNavigate } from 'react-router-dom';
 function Register() {
 	const [inputData, setInputData] =  React.useState({
 		facultyName: '',
-		email: '',
-		mobile: '',
-		password: '',
+		facultyEmail: '',
+		facultyMobile: '',
+		facultyPassword: '',
 		facultyProfile: ''
 	});
 	const [adminID, setAdminID] =  useState('');
@@ -51,13 +51,13 @@ function Register() {
 
 	async function handleSubmit(e) {
 		e.preventDefault();
-		if(inputData.facultyName && inputData.email && inputData.mobile && inputData.password && adminID && inputData.facultyProfile){
-			const {facultyName, email, mobile, password, facultyProfile} =  inputData;
+		if(inputData.facultyName && inputData.facultyEmail && inputData.facultyMobile && inputData.facultyPassword && adminID && inputData.facultyProfile){
+			const {facultyName, facultyEmail, facultyMobile, facultyPassword, facultyProfile} =  inputData;
 			const formData =  new FormData();
 			formData.append("facultyName", facultyName);
-			formData.append("email", email);
-			formData.append("mobile", mobile);
-			formData.append("password", password);
+			formData.append("facultyEmail", facultyEmail);
+			formData.append("facultyMobile", facultyMobile);
+			formData.append("facultyPassword", facultyPassword);
 			formData.append("facultyProfile", facultyProfile);
 			formData.append("adminID", adminID);
 			try{
@@ -98,11 +98,11 @@ function Register() {
 				</div>
 				<div className="col-span-full sm:col-span-3">
 					<label htmlFor="email" className="text-sm">Email</label>
-					<input  onChange={handleOnchange} name='email' value={inputData.email}  id="email" type="email" placeholder="Email" className="w-full rounded-md focus:ring focus:ring-opacity-75 text-black  focus:dark:ring-violet-600 dark:border-gray-300" />
+					<input  onChange={handleOnchange} name='facultyEmail' value={inputData.facultyEmail}  id="email" type="email" placeholder="Email" className="w-full rounded-md focus:ring focus:ring-opacity-75 text-black  focus:dark:ring-violet-600 dark:border-gray-300" />
 				</div>
 				<div className="col-span-full sm:col-span-3">
 					<label htmlFor="mobile" className="text-sm">Mobile</label>
-					<input id="mobile"  onChange={handleOnchange} name='mobile' value={inputData.mobile}  type="number" placeholder="Mobile" className="w-full rounded-md focus:ring focus:ring-opacity-75 text-black  focus:dark:ring-violet-600 dark:border-gray-300" />
+					<input id="mobile"  onChange={handleOnchange} name='facultyMobile' value={inputData.facultyMobile}  type="number" placeholder="Mobile" className="w-full rounded-md focus:ring focus:ring-opacity-75 text-black  focus:dark:ring-violet-600 dark:border-gray-300" />
 				</div>
 				<div className="col-span-full">
 					<label htmlFor="address" className="text-sm">Address</label>
@@ -122,7 +122,7 @@ function Register() {
 				</div>
 				<div className=" col-span-3 ">
 					<label htmlFor="Password" className="text-sm">Password</label>
-					<input  onChange={handleOnchange} name='password' value={inputData.password}  id="Password" type="password" placeholder="" className="w-full rounded-md focus:ring focus:ring-opacity-75 text-black  focus:dark:ring-violet-600 dark:border-gray-300" />
+					<input  onChange={handleOnchange} name='facultyPassword' value={inputData.facultyPassword}  id="Password" type="password" placeholder="" className="w-full rounded-md focus:ring focus:ring-opacity-75 text-black  focus:dark:ring-violet-600 dark:border-gray-300" />
 				</div>
 				<div className="col-span-3">
 					<label htmlFor="cpass" className="text-sm">Confirm Password</label>
@@ -130,7 +130,7 @@ function Register() {
 				</div>
 				<div className="col-span-full ">
 				
-					<input accept='.png, .jpg, .jpeg'  onChange={handleOnchange} name='facultyProfile'  id="file" type="file" placeholder="" className=" rounded-md focus:ring focus:ring-opacity-75   focus:dark:ring-violet-600 text-white border border-white p-4" />
+					<input accept='.png'  onChange={handleOnchange} name='facultyProfile'  id="file" type="file" placeholder="" className=" rounded-md focus:ring focus:ring-opacity-75   focus:dark:ring-violet-600 text-white border border-white p-4" />
 				</div>
 				<div className="col-span-full ">
 				

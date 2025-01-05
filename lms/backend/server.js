@@ -10,9 +10,14 @@ import cors from 'cors';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 const streame = fs.createWriteStream("./services/logs/config.txt", {flags: "a"});
-
-
-app.use(cors("*"));
+app.use(
+    cors({
+        origin: (_, callback) => {
+            callback(null, true);
+          },
+      credentials: true,
+    })
+  );
 app.use(morgan('combined', {stream: streame}));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
@@ -53,6 +58,7 @@ app.use("/", studentRoute);
 
 // ! mail verification route
 import mailverificationRoute from './services/mail/emailroute.js';
+
 app.use("/", mailverificationRoute)
 
 app.listen(port, ()=>{

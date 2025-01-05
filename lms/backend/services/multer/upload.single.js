@@ -22,12 +22,11 @@ const storage = multer.diskStorage({
 
   export const uploadFacultyMiddleware = (req, res, next) => {
     facultyMulter(req, res, (err) => {
-        if(err.field !== "facultyProfile"){
+        if(err && err.field !== "facultyProfile"){
             console.log(err.field)
             return handleError(res, 500, "Invalid Field Name");
         }
-  
-      next(); 
-    });
+        next(); 
+      });
   };
 

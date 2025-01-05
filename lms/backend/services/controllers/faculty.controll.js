@@ -2,12 +2,10 @@ import handleError from "../errors/handle.error.js";
 import FacultyModel from "../model/faculty.model.js";
 import courseModel from "../model/course.model.js";
 import adminModel from "../model/admin.model.js";
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 // ! get all the faculties  by admin
-
 export const getFaculty = async (req, res) => {
   const { adminid } = req.params;
   if (!adminid) {
@@ -21,7 +19,9 @@ export const getFaculty = async (req, res) => {
     try {
       const getFaculty = await FacultyModel.find({ adminID: validateAdminId });
       if (getFaculty) {
-        return handleError(res, 200, "Faculty found", {getFaculty:getFaculty});
+        return handleError(res, 200, "Faculty found", {
+          getFaculty: getFaculty,
+        });
       } else {
         return handleError(res, 400, "Faculty not found");
       }
@@ -31,19 +31,12 @@ export const getFaculty = async (req, res) => {
   }
 };
 
-
-
-
-
-
 // ! create faculty
 export const createFaculty = async (req, res) => {
- 
-  const { facultyName, facultyEmail, facultyMobile, facultyPassword, adminID } = req.body;
+  const { facultyName, facultyEmail, facultyMobile, facultyPassword, adminID } =
+    req.body;
   const facultyProfile = req.file;
   const id = req.params.id;
- 
-
   if (!id) {
     return handleError(res, 400, "Please provide admin ID");
   }
@@ -56,24 +49,25 @@ export const createFaculty = async (req, res) => {
     return handleError(res, 401, "Admin id does not match");
   }
 
-  const checkMail = await FacultyModel.findOne({ facultyEmail: facultyEmail });
 
- 
-  if (checkMail && checkMail.verified) {
-    return handleError(res, 400, "Email already exists or verified");
+  const checkMail = await FacultyModel.findOne({ facultyEmail });
+
+  if (checkMail && !checkMail.verified) {
+    await FacultyModel.deleteOne({ facultyEmail });
   }
 
-  if(checkMail && !checkMail.verified){
-    await FacultyModel.deleteOne({facultyEmail})
+
+  if (checkMail &&  checkMail.verified) {
+    return handleError(res, 400, "Email Already exist or  Verified");
   }
 
   try {
     if (!facultyProfile) {
       return handleError(res, 400, "Please provide faculty profile");
     } else {
-      if (facultyName && facultyEmail && facultyMobile && facultyPassword){
-        const salt =  await bcrypt.genSalt(12);
-        const hashPass =  await bcrypt.hash(facultyPassword, salt);
+      if (facultyName && facultyEmail && facultyMobile && facultyPassword) {
+        const salt = await bcrypt.genSalt(12);
+        const hashPass = await bcrypt.hash(facultyPassword, salt);
         const faculty = new FacultyModel({
           facultyName: facultyName,
           facultyEmail: facultyEmail,
@@ -97,61 +91,50 @@ export const createFaculty = async (req, res) => {
   }
 };
 
-
-function generateToken(user){
-  return jwt.sign({userid:user}, "secret", {expiresIn: "1m"});
+function generateToken(user) {
+  return jwt.sign({ userid: user }, "secret", { expiresIn: "1m" });
 }
-function generateRefreshToken(user){
-  return jwt.sign({userid:user}, "secret", {expiresIn: "5m"});
+function generateRefreshToken(user) {
+  return jwt.sign({ userid: user }, "secret", { expiresIn: "5m" });
 }
-
 
 // ! post route refresh token auth
-export const refresh =  (req, res)=>{
-  const {refreshToken} =  req.cookies;
-  if(!refreshToken)
+export const refresh = (req, res) => {
+  const { refreshToken } = req.cookies;
+  if (!refreshToken) return handleError(res, 400, "refreshtoken not found");
 
-    return handleError(res, 400, "refreshtoken not found")
-    
-    jwt.verify(refreshToken, "secret", (err, decode)=>{
-      if(err)
-        
-        return handleError(res, 400, "invalid token or expired")
-        
-        const newToken =  generateToken(decode.userid);
-        console.log(decode.userid)
-        res.cookie("accessToken", newToken, {httpOnly:true, maxAge:5*60*1000});
-        return handleError(res, 200, "token refreshed");
-      })
-    }
+  jwt.verify(refreshToken, "secret", (err, decode) => {
+    if (err) return handleError(res, 400, "invalid token or expired");
 
-      
-      // ! login faculty 
+    const newToken = generateToken(decode.userid);
+    console.log(decode.userid);
+    res.cookie("accessToken", newToken, {
+      httpOnly: true,
+      maxAge: 5 * 60 * 1000,
+      secure:false
+    });
+    return handleError(res, 200, "token refreshed");
+  });
+};
+
+// ! login faculty
 export const loginFaculty = async (req, res) => {
-  const { email, password } = req.body;
+  const { facultyEmail, facultyPassword } = req.body;
   try {
-    if (email && password) {
-      const varify_email = await FacultyModel.findOne({ email: email });
+    if (facultyEmail && facultyPassword) {
+      const varify_email = await FacultyModel.findOne({ facultyEmail });
       if (!varify_email) {
         return handleError(res, 400, "Email is not registered");
       }
-   
-      if (!varify_email.verified) {
-        let timeStamp =  varify_email.verificationExpire;
-        let currentTime =  Date.now()
-                let elapseTime =  currentTime -timeStamp;
-                if(elapseTime >=60000){
-                  await FacultyModel.deleteOne({email})
-                  return handleError(res, 400, "Link is expired");
-                }else{
-                  return handleError(res, 400, "Please verify your email before logging in");
-                  
-                }
-      }
 
+          if(!varify_email.verified){
+            return handleError(res, 400, "please verify your email first or register again")
+          }
 
-
-      const compare_password = await bcrypt.compare(password, varify_email.password);
+      const compare_password = await bcrypt.compare(
+        facultyPassword,
+        varify_email.facultyPassword
+      );
       if (!compare_password) {
         return handleError(res, 400, "Invalid password");
       }
@@ -159,9 +142,16 @@ export const loginFaculty = async (req, res) => {
       if (compare_password) {
         const token = generateToken(varify_email._id);
         const refreshToken = generateRefreshToken(varify_email._id);
-        res.cookie("accessToken", token, { httpOnly: true, maxAge: 1 * 60 * 1000 });
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, maxAge: 5 * 60 * 1000 });
-        return handleError(res, 200, "Logged in", varify_email);
+        res.cookie("accessToken", token, {
+          httpOnly: true,
+          maxAge: 1 * 60 * 1000,
+          
+        });
+        res.cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          maxAge: 5 * 60 * 1000,          
+        });   
+        return handleError(res, 200, "Logged in", varify_email, token);
       }
     } else {
       return handleError(res, 400, "All fields are required");
@@ -171,11 +161,8 @@ export const loginFaculty = async (req, res) => {
   }
 };
 
-
-
 // ! find  faculty by admin id and faculty id
 export const findFacultyById = async (req, res) => {
-
   const adminId = req.params.adminId;
   const facultyId = req.params.facultyId;
 
@@ -203,7 +190,6 @@ export const findFacultyById = async (req, res) => {
 };
 
 // ! delete faculty and associated courses
-
 export const deleteFacultyById = async (req, res) => {
   const { adminid } = req.params;
   const { facultyid } = req.params;
@@ -257,13 +243,11 @@ export const deleteFacultyById = async (req, res) => {
 
 // ! delete all faculty
 export const deleteAllFaculty = async (req, res) => {
-  
-  const {adminID} =  req.params;
+  const { adminID } = req.params;
   try {
-    if(!adminID){
+    if (!adminID) {
       return handleError(res, 404, "admin id not found");
-    }else{
-    
+    } else {
       const deleteAllFaculties = await FacultyModel.deleteMany();
       if (deleteAllFaculties) {
         return handleError(res, 200, "All faculties deleted successfully");
@@ -271,75 +255,74 @@ export const deleteAllFaculty = async (req, res) => {
         return handleError(res, 400, "cannot delete faculties");
       }
     }
-
   } catch (e) {
     return handleError(res, 500, e.message);
   }
 };
 
-
-
-
-
-
-
-
 // !  reset password
+export const resetPassword =  async(req, res)=>{
+  const {oldPassword, newPassword} =  req.body;
+  const {fid} = req.params;
+  
+  if(!fid){
+    return handleError(res, 400, "invalid faculty param")
+  }
+
+    if(!oldPassword || !newPassword){
+      return handleError(res, 400, "all fields are required")
+    }
+  try{
+      const checkFid =  await FacultyModel.findById(fid);
+        if(checkFid._id.toString() !== fid){
+          return handleError(res, 400, "invalid faculty or not found")
+        }
+        const facultyPassword =  checkFid.facultyPassword
+        const compareOldPassword =  await bcrypt.compare(oldPassword,facultyPassword);
+        if(!compareOldPassword){
+          return handleError(res, 400, "invalid old password");
+        }
+        if(oldPassword ===newPassword){
+          return handleError(res, 400, "old password and new password cannot be the same")
+        }
+        const salt =  await bcrypt.genSalt(12);
+        const hashedNewPassword =  await bcrypt.hash(newPassword, salt)
+        const user =  await FacultyModel.findByIdAndUpdate(fid, {$set:{facultyPassword:hashedNewPassword}}, {new:true})
+        if(user){
+          return handleError(res, 200, "Password updated successfully")
+        }else
+        {
+          return handleError(res, 400, "unable to update password")
+        }
+  }catch(e){
+    handleError(res, 500, "reset password error", e)
+  }
+}
 
 
-// export const resetPassword = async (req, res) => {
-//   const { oldPassword, newPassword, adminID } = req.body;
-//   const { id } = req.params; // Faculty ID
 
-//   // Check if all required fields are provided
-//   if (!oldPassword || !newPassword) {
-//     return handleError(res, 400, "Please provide both old and new passwords");
-//   }
+// ! public
+export const forgotPassword =  async(req, res)=>{
+    const {facultyPassowrd, facultyEmail} =  req.body;
+    if(!facultyEmail){
+      return handleError(res, 400, "all fields are required");
+    }
+    try{
+        const verifyEmail =  await FacultyModel.findOne({facultyEmail});
+        if(!verifyEmail){
+          return handleError(res, 400, "email is not registered")
+        }
 
-//   // Find the faculty by ID
-//   const faculty = await FacultyModel.findById(id);
-//   if (!faculty) {
-//     return handleError(res, 400, "Faculty not found");
-//   }
 
-//   // Check if the adminID matches the faculty's adminID
-//   if (faculty.adminID.toString() !== adminID) {
-//     return handleError(res, 401, "Admin ID does not match");
-//   }
 
-//   try {
-//     // Compare old password with the stored hashed password
-//     const isOldPasswordCorrect = await bcrypt.compare(oldPassword, faculty.password);
-//     if (!isOldPasswordCorrect) {
-//       return handleError(res, 400, "Old password is incorrect");
-//     }
+    }catch(e){
+      return handleError(res, 500, "forgot error", e)
+    }
 
-//     // Check if the new password is valid (you can add additional validation here)
-//     if (newPassword === oldPassword) {
-//       return handleError(res, 400, "New password cannot be the same as the old password");
-//     }
 
-//     // Hash the new password
-//     const salt = await bcrypt.genSalt(12);
-//     const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+}
 
-//     // Update the faculty password
-//     faculty.password = hashedNewPassword;
 
-//     // Save the updated faculty record
-//     const updatedFaculty = await faculty.save();
-
-//     // Return success response
-//     return res.status(200).json({
-//       message: "Password reset successfully",
-//       faculty: updatedFaculty
-//     });
-//   } catch (e) {
-//     return handleError(res, 400, e.message);
-//   }
-// };
-
-// !
 
 
 //! Code Implementation:
@@ -387,8 +370,6 @@ export const deleteAllFaculty = async (req, res) => {
 //     return handleError(res, 400, error.message);
 //   }
 // };
-
-
 
 //! Step 2: Reset Password Route (Accessible via the Reset Link)
 // const bcrypt = require('bcrypt');

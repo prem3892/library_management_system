@@ -30,7 +30,9 @@ export const createFaculty =  async(formData)=>{
 // ! login faculty 
 export const loginFaculty =  async(formData)=>{
     try{
-        const response = await axios.post(loginFacultyApi,formData);
+        const response = await axios.post(loginFacultyApi,formData, {
+            withCredentials:true
+        });
         return response.data;
     }catch(e){
         if(e.response.data.message ==="Email is not registered"){
@@ -41,6 +43,7 @@ export const loginFaculty =  async(formData)=>{
         }
 }
 }
+
 
 
 // !    card apis 

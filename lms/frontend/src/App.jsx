@@ -11,21 +11,54 @@ import Login from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
 import AddCourse from './components/pages/AddCourse';
 import EdictCourse from './components/pages/EditCourse';
-import ToggleRegister from './components/pages/ToggleRegister';
+
+import {useSelector, useDispatch} from 'react-redux';
+import { useEffect, useState } from "react";
+import { getCookieManage, handleLogout } from './redux/facullty.slice';
 
 
 function App() {
+  const {getCookie} =  useSelector(state=>state.faculty);
+  const dispatch =  useDispatch();
+  const [getname, setGetName] =  useState('')
+
+
+  const token =  localStorage.getItem("token");
+  const storedProfilePicture = localStorage.getItem("facultyProfile");
+	const fID = localStorage.getItem("facultyID");
+
+
+  const handleLogoutButton =  ()=>{
+    setGetName('')
+    const clearToken =   localStorage.clear();
+		dispatch(handleLogout(clearToken));
+		alert("logged out");
+    window.location.href =  "/login"
+  }
+
+  useEffect(()=>{
+        if(token){
+          let p =  localStorage.getItem('facultyName')
+          setGetName(p)
+          dispatch(getCookieManage(token))
+        }else{
+          setGetName('')
+          dispatch(getCookieManage(''))
+        }
+    
+  }, [token, dispatch, getCookie, setGetName])
+    
+
   return (
     <BrowserRouter>
-    <Header />
+    <Header  name={getname}/>
     <Routes>
       <Route path='/' element={<HeroSection />}/>
       <Route path='/register' element={<Register />}/>
       <Route path='/login' element={<Login />}/>
-      <Route path='/dashboard' element={<Dashboard />}/>
+      <Route path='/dashboard' element={<Dashboard getname={getname}  storedProfilePicture={storedProfilePicture} fID={fID} handleLogoutButton={handleLogoutButton}/>}/>
       <Route path='/add-course/:id' element={<AddCourse />}/>
       <Route path='/edit-course/faculty/:fid/course/:cid' element={<EdictCourse />}/>
-      <Route path='/toggle-register' element={<ToggleRegister />}/>
       </Routes>  
       <Footer />  
     </BrowserRouter>

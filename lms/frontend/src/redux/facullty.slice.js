@@ -37,10 +37,20 @@ const facultySlice =  createSlice({
     initialState: {
         faculty: [],
         loading: false,
+        getCookie:"",
+        logout:''
     },
+
     reducers: {
-      
+            getCookieManage:(state, action)=>{
+               state.getCookie =  action.payload;
+            },
+            handleLogout:(state, action)=>{
+                state.logout =  action.payload
+            }
     },
+    
+
     extraReducers: (builder)=>{
         // ! register builder
         builder.addCase(createFacultyThunk.pending, (state)=>{
@@ -66,6 +76,6 @@ const facultySlice =  createSlice({
         });
     }
 });
-
+export const {getCookieManage, handleLogout} =  facultySlice.actions;
 
 export default facultySlice.reducer;

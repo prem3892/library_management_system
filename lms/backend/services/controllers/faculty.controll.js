@@ -61,6 +61,8 @@ export const createFaculty = async (req, res) => {
     return handleError(res, 400, "Email Already exist or  Verified");
   }
 
+  
+
   try {
     if (!facultyProfile) {
       return handleError(res, 400, "Please provide faculty profile");
@@ -77,6 +79,7 @@ export const createFaculty = async (req, res) => {
           adminID: id,
         });
         if (faculty) {
+            // faculty.data =  "hello"
           const data = await faculty.save();
           return handleError(res, 201, "Faculty created successfully", data);
         } else {
@@ -274,7 +277,7 @@ export const resetPassword =  async(req, res)=>{
     }
   try{
       const checkFid =  await FacultyModel.findById(fid);
-        if(checkFid._id.toString() !== fid){
+        if(!checkFid){
           return handleError(res, 400, "invalid faculty or not found")
         }
         const facultyPassword =  checkFid.facultyPassword
@@ -295,24 +298,38 @@ export const resetPassword =  async(req, res)=>{
           return handleError(res, 400, "unable to update password")
         }
   }catch(e){
-    handleError(res, 500, "reset password error", e)
+    return handleError(res, 500, "reset password error", e)
   }
 }
 
 
 
+const randomNumber = Math.floor(Math.random() * 9000) + 1000;
+console.log(randomNumber);
+
+
 // ! public
 export const forgotPassword =  async(req, res)=>{
-    const {facultyPassowrd, facultyEmail} =  req.body;
+    const {facultyEmail} =  req.body;
     if(!facultyEmail){
-      return handleError(res, 400, "all fields are required");
+      return handleError(res, 400, "please enter email");
     }
     try{
+      // const crypto = require("crypto");
+// const randomBytes = crypto.randomBytes(2); // 2 bytes = 16 bits
+// const random4Digit = (parseInt(randomBytes.toString("hex"), 16) % 9000) + 1000;
+
+//   console.log(random4Digit);
+
+
+
+
+
+
         const verifyEmail =  await FacultyModel.findOne({facultyEmail});
         if(!verifyEmail){
-          return handleError(res, 400, "email is not registered")
+          return handleError(res, 400, "email is not found")
         }
-
 
 
     }catch(e){
@@ -322,94 +339,3 @@ export const forgotPassword =  async(req, res)=>{
 
 }
 
-
-
-
-//! Code Implementation:
-//! Step 1: Forgot Password Route (Public Route)
-// const crypto = require('crypto');
-// const bcrypt = require('bcrypt');
-// const FacultyModel = require('../models/FacultyModel'); // Adjust based on your file structure
-// const { sendVerification } = require('../utils/sendEmail'); // Adjust based on your file structure
-// const { handleError } = require('../utils/errorHandler'); // Adjust based on your file structure
-
-// // Forgot Password: Send email with verification link
-// export const forgotPassword = async (req, res) => {
-//   const { email } = req.body;
-
-//   if (!email) {
-//     return handleError(res, 400, "Please provide an email address");
-//   }
-
-//   try {
-//     const faculty = await FacultyModel.findOne({ email });
-//     if (!faculty) {
-//       return handleError(res, 400, "No account found with that email address");
-//     }
-
-//     // Generate a unique reset token (expires in 1 hour)
-//     const resetToken = crypto.randomBytes(20).toString('hex');
-//     const resetTokenExpiration = Date.now() + 3600000; // 1 hour
-
-//     // Store the reset token and its expiration date in the database
-//     faculty.resetPasswordToken = resetToken;
-//     faculty.resetPasswordExpires = resetTokenExpiration;
-//     await faculty.save();
-
-//     // Send email with the reset link
-//     const resetLink = `http://localhost:8585/api/v1/reset-password/${resetToken}`;
-//     const msg = `<h2>Please <a href="${resetLink}">click here</a> to reset your password.</h2>`;
-
-//     // Send verification email
-//     sendVerification(email, "Password Reset Request", msg);
-
-//     return res.status(200).json({
-//       message: "Password reset link has been sent to your email",
-//     });
-//   } catch (error) {
-//     return handleError(res, 400, error.message);
-//   }
-// };
-
-//! Step 2: Reset Password Route (Accessible via the Reset Link)
-// const bcrypt = require('bcrypt');
-// const FacultyModel = require('../models/FacultyModel'); // Adjust based on your file structure
-// const { handleError } = require('../utils/errorHandler'); // Adjust based on your file structure
-
-// // Reset Password: User submits a new password along with the reset token
-// export const resetPassword = async (req, res) => {
-//   const { token } = req.params; // Get token from URL
-//   const { newPassword } = req.body; // New password provided by the user
-
-//   if (!newPassword) {
-//     return handleError(res, 400, "Please provide a new password");
-//   }
-
-//   try {
-//     // Find the faculty by the reset token
-//     const faculty = await FacultyModel.findOne({
-//       resetPasswordToken: token,
-//       resetPasswordExpires: { $gt: Date.now() }, // Check if the token is still valid (hasn't expired)
-//     });
-
-//     if (!faculty) {
-//       return handleError(res, 400, "Invalid or expired token");
-//     }
-
-//     // Hash the new password
-//     const salt = await bcrypt.genSalt(12);
-//     const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-//     // Update the user's password and clear the reset token and expiration
-//     faculty.password = hashedPassword;
-//     faculty.resetPasswordToken = undefined;
-//     faculty.resetPasswordExpires = undefined;
-//     await faculty.save();
-
-//     return res.status(200).json({
-//       message: "Password has been successfully reset",
-//     });
-//   } catch (error) {
-//     return handleError(res, 400, error.message);
-//   }
-// };

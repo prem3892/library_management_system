@@ -28,6 +28,7 @@ facultyRoute.delete("/admin/:adminid/deletefaculty/:facultyid", deleteFacultyByI
 facultyRoute.delete("/:adminID/deleteallfaculty", deleteAllFaculty);
 facultyRoute.post("/refresh", refresh);
 facultyRoute.patch("/resetPassword/:fid", resetPassword);
+facultyRoute.post("/forgot-password", forgotPassword)
 
 
 facultyRoute.get("/link",(req, res)=>{
@@ -66,7 +67,6 @@ facultyRoute.post("/verify", async (req, res) => {
         } else {
             return res.render("email", { message: "Email not found. Please try again." });
         }
-
 });
 
 

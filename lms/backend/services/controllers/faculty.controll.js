@@ -4,12 +4,16 @@ import courseModel from "../model/course.model.js";
 import adminModel from "../model/admin.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+// import sendVerification, { sendForgetLink } from "../mail/mailVarification.js";
+import crypto from "crypto";
+import { transport, verification } from "../mail/mailVarification.js";
+import sendForgetLink from "../mail/forget.otp.js";
 
 // ! get all the faculties  by admin
 export const getFaculty = async (req, res) => {
   const { adminid } = req.params;
   if (!adminid) {
-    return handleError(res, 400, "Please provide admin ID");
+    return handleError(res, 400, "invalid url");
   }
 
   const validateAdminId = await adminModel.findById(adminid);
@@ -30,6 +34,7 @@ export const getFaculty = async (req, res) => {
     }
   }
 };
+
 
 // ! create faculty
 export const createFaculty = async (req, res) => {
@@ -55,18 +60,17 @@ export const createFaculty = async (req, res) => {
   if (checkMail && !checkMail.verified) {
     await FacultyModel.deleteOne({ facultyEmail });
   }
-
-
+  
   if (checkMail &&  checkMail.verified) {
     return handleError(res, 400, "Email Already exist or  Verified");
   }
-
   
 
   try {
     if (!facultyProfile) {
       return handleError(res, 400, "Please provide faculty profile");
     } else {
+
       if (facultyName && facultyEmail && facultyMobile && facultyPassword) {
         const salt = await bcrypt.genSalt(12);
         const hashPass = await bcrypt.hash(facultyPassword, salt);
@@ -81,7 +85,30 @@ export const createFaculty = async (req, res) => {
         if (faculty) {
             // faculty.data =  "hello"
           const data = await faculty.save();
+         
+          
+           const token = crypto.randomBytes(20).toString("hex");
+            verification[facultyEmail] = { token, expires: Date.now() + 60 * 1000 };
+            const link = `<h2>Link Is Valid For 1 Minut</h2> <br /><h2>Hii ${facultyName} Please <a href='http://localhost:8585/verifymail/${facultyEmail}/${token}'>Verify</a> Your Mail</h2>`;
+            
+              const info = {
+                  from: process.env.SMTP_MAIL,
+                  to: facultyEmail,
+                  subject: "Mail Verification",
+                  html: link,
+                };
+
+                transport.sendMail(info, (err) => {
+                  if (err) {
+                    console.log("Error: ", err);
+                  }
+            
+                  console.log(`Message sent to: ${facultyName}`);
+               
+                });
+
           return handleError(res, 201, "Faculty created successfully", data);
+      
         } else {
           return handleError(res, 400, "Faculty not created");
         }
@@ -154,6 +181,9 @@ export const loginFaculty = async (req, res) => {
           httpOnly: true,
           maxAge: 5 * 60 * 1000,          
         });   
+
+        varify_email.token =  "10";
+        await varify_email.save()
         return handleError(res, 200, "Logged in", varify_email, token);
       }
     } else {
@@ -304,38 +334,35 @@ export const resetPassword =  async(req, res)=>{
 
 
 
-const randomNumber = Math.floor(Math.random() * 9000) + 1000;
-console.log(randomNumber);
-
-
 // ! public
-export const forgotPassword =  async(req, res)=>{
-    const {facultyEmail} =  req.body;
-    if(!facultyEmail){
-      return handleError(res, 400, "please enter email");
+export const verificationOtp = {}
+
+export const forgotPassword = async (req, res) => {
+    const { facultyEmail } = req.body;
+    if (!facultyEmail) {
+        return handleError(res, 400, "Please enter email");
     }
-    try{
-      // const crypto = require("crypto");
-// const randomBytes = crypto.randomBytes(2); // 2 bytes = 16 bits
-// const random4Digit = (parseInt(randomBytes.toString("hex"), 16) % 9000) + 1000;
 
-//   console.log(random4Digit);
-
-
-
-
-
-
-        const verifyEmail =  await FacultyModel.findOne({facultyEmail});
-        if(!verifyEmail){
-          return handleError(res, 400, "email is not found")
+    try {
+        const verifyEmail = await FacultyModel.findOne({ facultyEmail });
+        if (!verifyEmail) {
+            return handleError(res, 400, "Email not found");
         }
 
+        if (!verifyEmail.verified) {
+            return handleError(res, 400, "You need to verify your email first or register again");
+        }
 
-    }catch(e){
-      return handleError(res, 500, "forgot error", e)
+        const otp = Math.floor(Math.random() * 9000) + 1000;
+        const expiresTime = Date.now() + 2 * 60 * 1000;
+
+        verificationOtp[facultyEmail] = { otp, expiresTime };
+
+              const msg = `<h2>OTP ${otp} is valid for 2 minutes.</h2>`;
+              sendForgetLink(facultyEmail, "Reset Password OTP", msg);
+
+        return handleError(res, 200, "OTP sent to your email");
+    } catch (e) {
+        return handleError(res, 500, "Forgot password error", e);
     }
-
-
-}
-
+};

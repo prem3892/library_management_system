@@ -49,7 +49,7 @@ function Register() {
 			}));
 	};
 
-	async function handleSubmit(e) {
+	 async function handleSubmit(e) {
 		e.preventDefault();
 		if(inputData.facultyName && inputData.facultyEmail && inputData.facultyMobile && inputData.facultyPassword && adminID && inputData.facultyProfile){
 			const {facultyName, facultyEmail, facultyMobile, facultyPassword, facultyProfile} =  inputData;
@@ -61,13 +61,12 @@ function Register() {
 			formData.append("facultyProfile", facultyProfile);
 			formData.append("adminID", adminID);
 			try{
-				await dispatch(createFacultyThunk(formData)).unwrap();
+				await dispatch(createFacultyThunk(formData)).unwrap()
 				alert("Data successfully submitted");
 				navigate("/login", {replace: true})
 				
 			}catch(e){
-			
-				return console.log(e.message);
+			return e;
 			}
 		}else{
 			alert('all fields are required')

@@ -13,17 +13,20 @@ mailverificationRoute.get("/verifymail/:email/:token", async (req, res) => {
   try {
     const findUser = await FacultyModel.findOne({ facultyEmail: email });
     if (!findUser) {
+      delete verification[email]
       return handleError(res, 400, "user not found");
     }
     const data = verification[email];
 
     if (!data || data.token !== token || Date.now() > data.expires) {
+      console.log(data)
       return res.render("expires");
     }
 
     if (findUser) {
       findUser.verified = true;
       await findUser.save();
+      delete verification[email]
       return res.render("verified");
     }
   } catch (error) {

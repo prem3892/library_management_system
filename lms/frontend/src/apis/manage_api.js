@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-import toast from 'react-hot-toast'; 
+// import toast from 'react-hot-toast'; 
 
 
 export const appId =  "672388a94a7edf80fc5bf4e1";
@@ -17,13 +17,12 @@ export const createFaculty =  async(formData)=>{
         const response = await axios.post(createFacultyAPi, formData);
         return response.data;
     }catch(e){
-        if(e.response.status === 401){
-            toast.error("password error");
-            throw new Error(alert("invalid password length"));
+      
+        if(e.response.data.message === "Email Already exist or  Verified"){
+            alert('email already exist');
+            throw new Error();
         }
-        if(e.response.status === 400){
-            throw new Error(alert("Email already exists"))
-        }
+
     }
 }
 
@@ -35,12 +34,8 @@ export const loginFaculty =  async(formData)=>{
         });
         return response.data;
     }catch(e){
-        if(e.response.data.message ==="Email is not registered"){
-            throw new Error(alert("Invalid Email"));
-        }
-        if(e.response.data.message === "invalid password"){
-            throw new Error(alert("Invalid Password"))
-        }
+     
+       return console.log(e)
 }
 }
 

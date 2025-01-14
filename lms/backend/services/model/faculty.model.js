@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
 
+
+
+// const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 const facultySchema = new mongoose.Schema({
     facultyName: {
       type: String,
@@ -8,7 +12,7 @@ const facultySchema = new mongoose.Schema({
     },
     facultyEmail: {
       type: String,
-      required: true,
+      required: [true, 'Email is required'],
       unique: true,
       lowercase: true,
     },
@@ -36,6 +40,5 @@ const facultySchema = new mongoose.Schema({
   }, { timestamps: true });
   
   const FacultyModel = mongoose.model("faculty", facultySchema);
-  
   export default FacultyModel;
   
